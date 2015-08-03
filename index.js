@@ -12,27 +12,6 @@ var queryBuilder = require("./query-builder.js");
 var Tweet = require('./models/tweet.js');
 var Seed = require('./models/seed.js');
 
-
-// Retrive environment variables
-var mongoProtocolHostAndPort = process.env.MONGO_DB_PORT;
-var mongoDB = process.env.SKE_DATABASE_NAME;
-var crawlerStartDate  = process.env.SKE_CRAWLER_START_DATE;
-
-if(!_.isUndefined(mongoProtocolHostAndPort) && !_.isUndefined(mongoDB) && !_.isUndefined(crawlerStartDate)){
-    
-  var mongoHostAndPort = mongoProtocolHostAndPort.slice(_.lastIndexOf(mongoProtocolHostAndPort, "/") +1 );
-  //this.connect(mongoHostAndPort, mongoDB);
-  myFunctionm();
-}
-else {
-  logger.debug("#index - environment Variables not set")
-  process.exit();
-}
-
-var myFunctionm  = function(){
-  logger.log("working");
-}
-
 var connect = function(mongoHostAndPort, mongoDB) {
 
   logger.debug('#index - Connecting to the database');
@@ -112,3 +91,20 @@ var saveTweets = function(tweets, seedId, callback){
     callback();
   }
 };
+
+
+
+// Retrive environment variables
+var mongoProtocolHostAndPort = process.env.MONGO_DB_PORT;
+var mongoDB = process.env.SKE_DATABASE_NAME;
+var crawlerStartDate  = process.env.SKE_CRAWLER_START_DATE;
+
+if(!_.isUndefined(mongoProtocolHostAndPort) && !_.isUndefined(mongoDB) && !_.isUndefined(crawlerStartDate)){
+    
+  var mongoHostAndPort = mongoProtocolHostAndPort.slice(_.lastIndexOf(mongoProtocolHostAndPort, "/") +1 );
+  connect(mongoHostAndPort, mongoDB);
+}
+else {
+  logger.debug("#index - environment Variables not set")
+  process.exit();
+}
