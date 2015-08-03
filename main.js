@@ -31,21 +31,8 @@ var retrieveAndSaveTweets = function(queries, db, callback){
         var partialTwitterCrawler = _.partial(crawler.scrapeTweetsFromSearchResult, twitterQuery);
         var partialTwitterSaver   = _.partial(saveTweets, _, query.seedId, db);
 
-        async.waterfall([partialTwitterCrawler, partialTwitterSaver], function(err, result){
-          if(err){
-            logger.debug("#main - waterfall-callback error saving tweets" + err);
-            return secondCallback(err);
-          }
-          return secondCallback(null);
-
-        });
-    }, function(err, result){
-      if(err){
-        logger.debug("#main - first-each-callbak error saving tweets" + err);
-        return firstCallback(err);
-      } 
-        return firstCallback(null);
-    });
+        async.waterfall([partialTwitterCrawler, partialTwitterSaver], secondCallback);
+    }, firstCallback);
 
   }, function(err, result){
     if(err){
@@ -71,17 +58,7 @@ var saveTweets = function(tweets, seedId, db, callback){
 
     logger.debug('#index - Saving ' + tweets.length + ' tweets for seed: ' + seedId);
 
-    Tweet.create(tweets, function(err, result){
-      
-      if(err) {
-        
-        logger.debug("#main - error saving tweets" + err);
-        return callback(err, null);
-      }
-      
-      logger.debug("#main - tweets were saved");
-      return callback(null);
-    });
+    Tweet.create(tweets, callback);
   } 
   else {
 
@@ -93,11 +70,11 @@ var saveTweets = function(tweets, seedId, db, callback){
 exports = module.exports = {
   
   start:function(db, crawlerStartDate){
-
-    var pRetrieveAndSaveTweets = _.partial(retrieveAndSaveTweets, _, db);
+    
     var pPrepareQueries = _.partial(prepareQueries, _, crawlerStartDate);
+    var pRetrieveAndSaveTweets = _.partial(retrieveAndSaveTweets, _, db);
     async.waterfall([retrieveSeeds, pPrepareQueries, pRetrieveAndSaveTweets], function(err, result){
-      
+
       if(err) {
 
         logger.debug("#index " + errr);
