@@ -22,7 +22,7 @@ var prepareQueriesForSeeds = function(seeds, sinceDate){
 			}
 
 			seedQueries.push(buildTwitterQueryWithTerm(twitterTerm, sinceDate));
-		}
+		});
 
 		queries.push({
 			'seedId':seed._id,
