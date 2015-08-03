@@ -49,7 +49,8 @@ var retrieveSeeds = function(callback){
 // 2.
 var prepareQueries = function(seeds, callback){
 
-  console.log(crawlerStartDate);
+  console.log("Seeds " + seeds);
+  console.log("Crawler Date" + crawlerStartDate);
   var queries = queryBuilder.prepareQueriesForSeeds(seeds, crawlerStartDate);
   callback(null, queries);
 };
