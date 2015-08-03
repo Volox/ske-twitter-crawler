@@ -51,7 +51,7 @@ var saveTweets = function(tweets, seedId, db, callback){
 
     logger.debug('#index - Saving ' + tweets.length + ' tweets for seed: ' + seedId);
 
-    Tweet.create(tweets, function(err){
+    Tweet.save(tweets, function(err){
       
       if(err) {
         
