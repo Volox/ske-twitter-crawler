@@ -55,11 +55,11 @@ var saveTweets = function(tweets, seedId, db, callback){
       
       if(err) {
         
-        logger.log("#main - error saving tweets" + err);
+        logger.debug("#main - error saving tweets" + err);
         return callback(err);
       }
       
-      logger.log("#main - tweets were saved");
+      logger.debug("#main - tweets were saved");
       return callback(null);
     });
   } 
