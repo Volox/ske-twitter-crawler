@@ -14,23 +14,24 @@ var Brand = require('./models/brand.js');
 
 
 // Retrive environment variables
-var mongoHost = process.env.MONGO_DB_27015_TCP_ADDR;
+var mongoProtocolHostAndPort = process.env.MONGO_DB_PORT;
 var mongoDB = process.env.SKE_DATABASE_NAME;
 var crawlerStartDate  = process.env.SKE_CRAWLER_START_DATE;
 
-if(!_.isUndefined(mongoHost) && !_.isUndefined(mongoDB) && !_.isUndefined(crawlerStartDate)){
+if(!_.isUndefined(mongoProtocolHostAndPort) && !_.isUndefined(mongoDB) && !_.isUndefined(crawlerStartDate)){
     
-  connect(mongoHost, mongoDB);
+  var mongoHostAndPort = mongoProtocolHostAndPort.slice(_.lastIndexOf(mongoProtocolHostAndPort, "/") +1 );
+  connect(mongoHostAndPort, mongoDB);
 }
 else {
   logger.debug("#index - environment Variables not set")
   process.exit();
 }
 
-var connect = function(mongoHost, mongoDB) {
+var connect = function(mongoHostAndPort, mongoDB) {
 
   logger.debug('#index - Connecting to the database');
-  mongoose.connect("mongodb://"+mongoHost+"/"+databaseName);
+  mongoose.connect("mongodb://"+mongoHostAndPort+"/"+mongoDB);
   var db = mongoose.connection; 
   
   db.once('open', function() {
