@@ -68,12 +68,12 @@ var saveTweets = function(tweets, seedId, db, callback){
 
     logger.debug('#index - Saving ' + tweets.length + ' tweets for seed: ' + seedId);
 
-    Tweet.create(tweets, function(err){
+    Tweet.create(tweets, function(err, result){
       
       if(err) {
         
         logger.debug("#main - error saving tweets" + err);
-        return callback(err);
+        return callback(err, null);
       }
       
       logger.debug("#main - tweets were saved");
