@@ -39,7 +39,7 @@ var scrapeTweetsFromSearchResult = function(query, callback) {
               window.document.body.scrollTop = window.document.body.scrollTop + 10000;
 
               var count = $("#stream-items-id .tweet").length;
-              logger.debug("#crawler - Found "+count+" tweets");
+              //logger.debug("#crawler - Found "+count+" tweets");
               var endTag = $('.stream-end');
               var end = false;
               if (endTag) {
