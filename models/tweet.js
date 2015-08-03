@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var TweetSchema = new Schema({
 
-  tweetId: {type:String, unique:true},
+  tweetId: String,//{type:String, unique:true},
   text: String,
   location: String,
   timestamp: String,
