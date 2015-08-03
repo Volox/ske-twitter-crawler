@@ -33,6 +33,7 @@ var retrieveAndSaveTweets = function(queries, db, callback){
 
         async.waterfall([partialTwitterCrawler, partialTwitterSaver], function(err, result){
           if(err){
+            logger.debug("#main - waterfall-callback error saving tweets" + err);
             return secondCallback(err);
           }
           return secondCallback(null);
@@ -40,17 +41,19 @@ var retrieveAndSaveTweets = function(queries, db, callback){
         });
     }, function(err, result){
       if(err){
+        logger.debug("#main - first-each-callbak error saving tweets" + err);
         return firstCallback(err);
       } 
-        return firstCallback();
+        return firstCallback(null);
     });
 
   }, function(err, result){
     if(err){
+      logger.debug("#main - second-each-callbak error saving tweets" + err);
       return callback(err);
     }
 
-    return callback();
+    return callback(null);
   });
 };
 
