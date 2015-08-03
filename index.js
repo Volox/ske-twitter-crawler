@@ -10,12 +10,13 @@ var queryBuilder = require("./query-builder.js");
 
 var Tweet = require('./models/tweet.js');
 var Seed = require('./models/seed.js');
+var db = undefined;
 
 var connect = function(mongoHostAndPort, mongoDB) {
 
   logger.debug('#index - Connecting to the database');
   mongoose.connect("mongodb://"+mongoHostAndPort+"/"+mongoDB);
-  var db = mongoose.connection; 
+  db = mongoose.connection; 
   
   db.once('open', function() {
 
