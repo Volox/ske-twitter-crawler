@@ -26,7 +26,7 @@ var retrieveAndSaveTweets = function(queries, db, callback){
   
   async.each(queries, function(query, firstCallback){
 
-    logger.debug(JSON.stringify(twitterQuery));
+    logger.debug(JSON.stringify(query));
 
     async.each(query.twitterQueries, function(twitterQuery, secondCallback){
         
