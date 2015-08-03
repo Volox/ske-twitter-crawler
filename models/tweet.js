@@ -12,8 +12,6 @@ var TweetSchema = new Schema({
   seed:{ type: Schema.Types.ObjectId, ref: 'seed' }
 });
 
-console.log('Loading the schema');
-
 var Tweet = mongoose.model('tweet', TweetSchema);
 
 exports = module.exports = Tweet;
