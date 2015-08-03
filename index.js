@@ -7,7 +7,7 @@ var main     = require("./main");
 
 
 // Retrive environment variables
-var mongoProtocolHostAndPort  = process.env.MONGO_DB_PORT;
+var mongoProtocolHostAndPort  = process.env.MONGO_PORT;
 var mongoDB                   = process.env.SKE_DATABASE_NAME;
 var crawlerStartDate          = process.env.SKE_CRAWLER_START_DATE;
 
