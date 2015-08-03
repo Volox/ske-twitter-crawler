@@ -1,5 +1,6 @@
 
 var async        = require('async');
+var _            = require("underscore");
 var logger       = require("./logger");
 var crawler      = require("./crawler");
 var queryBuilder = require("./query-builder");
