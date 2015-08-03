@@ -1,8 +1,8 @@
 
 
-var mongoose     = require('mongoose');
-var _            = require("underscore");
-var main          = requie("./main");
+var mongoose = require('mongoose');
+var _        = require("underscore");
+var main     = require("./main");
 
 
 // Retrive environment variables
