@@ -26,6 +26,8 @@ var retrieveAndSaveTweets = function(queries, db, callback){
   
   async.each(queries, function(query, firstCallback){
 
+    logger.debug(JSON.stringify(twitterQuery));
+
     async.each(query.twitterQueries, function(twitterQuery, secondCallback){
         
         var partialTwitterCrawler = _.partial(crawler.scrapeTweetsFromSearchResult, twitterQuery);
@@ -53,12 +55,12 @@ var saveTweets = function(tweets, seedId, db, callback){
 
     Tweet.create(tweets, function(err) {
 
-      // Manage Duplicate key errors.
+      // Manage duplicated key errors.
       if(err && err.code !== 11000) {
 
         return callback(err);
       }
-      
+
       return callback(null);
     });
   } 
