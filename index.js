@@ -2,7 +2,6 @@
 var async        = require('async');
 var mongoose     = require('mongoose');
 var _            = require("underscore");
-var querystring  = require("querystring");
 var fs           = require("fs");
 
 var logger       = require("./logger.js");

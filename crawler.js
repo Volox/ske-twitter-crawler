@@ -3,6 +3,7 @@ var phantom = require('phantom');
 var cheerio = require('cheerio');
 var logger  = require('./logger.js');
 var _       = require("underscore");
+var querystring  = require("querystring");
 
 
 // A utility function that parses the obtained HTML, and
