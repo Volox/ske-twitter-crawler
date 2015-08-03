@@ -51,4 +51,4 @@ var buildTwitterQueryWithAuthor = function(author, sinceDate){
   	};
 };
 
-module.exports = prepareQueriesForSeeds;
+exports = module.exports = prepareQueriesForSeeds;

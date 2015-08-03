@@ -127,4 +127,4 @@ var parseTweetsFromHTML = function(html) {
   return tweets;
 };
 
-module.exports = scrapeTweetsFromSearchResult;
+exports = module.exports = scrapeTweetsFromSearchResult;
