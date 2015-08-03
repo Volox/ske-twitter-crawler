@@ -14,7 +14,7 @@ var prepareQueriesForSeeds = function(seeds, sinceDate){
 		
 		var seedQueries = [];
 
-		_.each(seed.twitter, function(twitterTerm)){
+		_.each(seed.twitter, function(twitterTerm) {
 
 			if(twitterTerm[0] === "@"){
 
