@@ -1,9 +1,9 @@
 
 var phantom = require('phantom');
 var cheerio = require('cheerio');
-var logger  = require('./logger.js');
 var _       = require("underscore");
-
+var querystring = require("querystring");
+var logger  = require('./logger.js');
 
 // Async method. Navigates to the given URL parsing 
 // HTML the elements with a .tweet class. The function also
