@@ -57,6 +57,7 @@ var retrieveAndSaveTweets = function(queries, db, callback){
 // 4. 
 var saveTweets = function(tweets, seedId, db, callback){
 
+  logger.debug(tweets + ' ' + seedId + ' ' + db + ' '+ callback);
   if(tweets && tweets.length > 0){
 
     var Tweet = db.model('tweet');
@@ -98,11 +99,11 @@ exports = module.exports = {
       if(err) {
 
         logger.debug("#index " + errr);
-        process.exit();
+        return process.exit();
       } 
      
       logger.debug("#index - Finished succesfully")
-      process.exit();
+      return process.exit();
     });
   }
 };
