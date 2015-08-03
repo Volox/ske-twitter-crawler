@@ -8,6 +8,6 @@ var SeedSchema = new Schema({
   entityName: String
 });
 
-var Tweet = mongoose.model('seed', SeedSchema);
+var Seed = mongoose.model('seed', SeedSchema);
 
 exports = module.exports = Seed;
