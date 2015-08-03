@@ -77,7 +77,7 @@ exports = module.exports = {
 
       if(err) {
 
-        logger.debug("#index " + errr);
+        logger.debug("#index " + err);
         return process.exit();
       } 
      
