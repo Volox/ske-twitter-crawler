@@ -49,6 +49,7 @@ var retrieveSeeds = function(callback){
 // 2.
 var prepareQueries = function(seeds, callback){
 
+  console.log(crawlerStartDate);
   var queries = queryBuilder.prepareQueriesForSeeds(seeds, crawlerStartDate);
   callback(null, queries);
 };
@@ -91,7 +92,6 @@ var saveTweets = function(tweets, seedId, callback){
     callback();
   }
 };
-
 
 
 // Retrive environment variables
