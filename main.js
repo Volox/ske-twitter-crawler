@@ -31,10 +31,27 @@ var retrieveAndSaveTweets = function(queries, db, callback){
         var partialTwitterCrawler = _.partial(crawler.scrapeTweetsFromSearchResult, twitterQuery);
         var partialTwitterSaver   = _.partial(saveTweets, _, query.seedId, db);
 
-        async.waterfall([partialTwitterCrawler, partialTwitterSaver], secondCallback);
-    }, firstCallback);
+        async.waterfall([partialTwitterCrawler, partialTwitterSaver], function(err, result){
+          if(err){
+            return secondCallback(err);
+          }
+          return secondCallback(null);
 
-  }, callback);
+        });
+    }, function(err, result){
+      if(err){
+        return firstCallback(err);
+      } 
+        return firstCallback();
+    });
+
+  }, function(err, result){
+    if(err){
+      return callback(err);
+    }
+
+    return callback();
+  });
 };
 
 // 4. 
@@ -66,7 +83,7 @@ var saveTweets = function(tweets, seedId, db, callback){
   else {
 
     logger.debug('#index - Could not find any tweets related with seed: ' + seedId);
-    callback(null);
+    return callback(null);
   }
 };
 
