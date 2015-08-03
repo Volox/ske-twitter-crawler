@@ -21,8 +21,7 @@ var crawlerStartDate  = process.env.SKE_CRAWLER_START_DATE;
 if(!_.isUndefined(mongoProtocolHostAndPort) && !_.isUndefined(mongoDB) && !_.isUndefined(crawlerStartDate)){
     
   var mongoHostAndPort = mongoProtocolHostAndPort.slice(_.lastIndexOf(mongoProtocolHostAndPort, "/") +1 );
-  //connect(mongoHostAndPort, mongoDB);
-  console.log(mongoHostAndPort + " " + mongoDB + " " + crawlerStartDate);
+  connect(mongoHostAndPort, mongoDB);
 }
 else {
   logger.debug("#index - environment Variables not set")
