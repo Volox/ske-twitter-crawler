@@ -5,7 +5,7 @@ var buildTwitterQueryWithTerm = function(searchTerm, sinceDate){
 	return {
         f: 'realtime',
         q: searchTerm + ' since:' + sinceDate,
-        src: 'sprv'
+        src: 'typd'
   	};
 };
 
@@ -14,7 +14,7 @@ var buildTwitterQueryWithAuthor = function(author, sinceDate){
 	return {
         f: 'realtime',
         q: 'from:'+ author + ' since:' + sinceDate,
-        src: 'sprv'
+        src: 'typd'
   	};
 };
 
