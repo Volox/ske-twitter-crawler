@@ -10,7 +10,7 @@ var crawler      = require("./crawler.js");
 var queryBuilder = require("./query-builder.js");
 
 var Tweet = require('./models/tweet.js');
-var Brand = require('./models/brand.js');
+var Seed = require('./models/seed.js');
 
 
 // Retrive environment variables
