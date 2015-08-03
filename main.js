@@ -51,12 +51,17 @@ var saveTweets = function(tweets, seedId, db, callback){
 
     logger.debug('#index - Saving ' + tweets.length + ' tweets for seed: ' + seedId);
 
-    return Tweet.create(tweets, callback);
+    Tweet.create(tweets, function(err){
+      if(err) {
+        return callback(err);
+      }
+      return callback(null);
+    });
   } 
   else {
 
     logger.debug('#index - Could not find any tweets related with seed: ' + seedId);
-    callback();
+    callback(null);
   }
 };
 
