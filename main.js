@@ -34,14 +34,7 @@ var retrieveAndSaveTweets = function(queries, db, callback){
         async.waterfall([partialTwitterCrawler, partialTwitterSaver], secondCallback);
     }, firstCallback);
 
-  }, /*function(err, result){
-    if(err){
-      logger.debug("#main - second-each-callbak error saving tweets" + err);
-      return callback(err);
-    }
-
-    return callback(null);
-  }*/callback);
+  }, callback);
 };
 
 // 4. 
@@ -58,7 +51,16 @@ var saveTweets = function(tweets, seedId, db, callback){
 
     logger.debug('#index - Saving ' + tweets.length + ' tweets for seed: ' + seedId);
 
-    Tweet.create(tweets, callback);
+    Tweet.create(tweets, function(err) {
+
+      // Manage Duplicate key errors.
+      if(err && err.code !== 11000) {
+
+        return callback(err);
+      }
+      
+      return callback(null);
+    });
   } 
   else {
 
