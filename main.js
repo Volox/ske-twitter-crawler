@@ -34,14 +34,14 @@ var retrieveAndSaveTweets = function(queries, db, callback){
         async.waterfall([partialTwitterCrawler, partialTwitterSaver], secondCallback);
     }, firstCallback);
 
-  }, function(err, result){
+  }, /*function(err, result){
     if(err){
       logger.debug("#main - second-each-callbak error saving tweets" + err);
       return callback(err);
     }
 
     return callback(null);
-  });
+  }*/callback);
 };
 
 // 4. 
