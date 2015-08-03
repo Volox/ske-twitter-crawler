@@ -60,7 +60,6 @@ var retrieveAndSaveTweets = function(queries, db, callback){
 // 4. 
 var saveTweets = function(tweets, seedId, db, callback){
 
-  logger.debug(tweets + ' ' + seedId + ' ' + db + ' '+ callback);
   if(tweets && tweets.length > 0){
 
     var Tweet = db.model('tweet');
