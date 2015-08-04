@@ -13,7 +13,7 @@ var logger = new winston.Logger({
         }),
         // setup logging to file
         new(winston.transports.File)({
-            filename: '../logs/crawler.log',
+            filename: './logs/crawler.log',
             maxsize: 1024 * 1024 * 10, // 10MB
             level: 'info'
         })

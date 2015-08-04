@@ -3,7 +3,7 @@ var phantom = require('phantom');
 var cheerio = require('cheerio');
 var _       = require("underscore");
 var querystring = require("querystring");
-var logger  = require('../core/logger.js');
+var logger  = require('../core/logger');
 
 // A utility function that parses the obtained HTML, and
 // retrives all the useful information out of the found tweets
