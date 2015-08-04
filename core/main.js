@@ -15,7 +15,7 @@ var retrieveSeeds = function(callback){
   
   logger.info("#main - retrieveing seeds");
   Seed.find( function(err, seeds){
-    //debugger;
+    
     if(err) {
 
       logger.err("#main - " + err);
@@ -34,7 +34,6 @@ var prepareQueries = function(seeds, crawlerStartDate, callback){
 
   logger.info("#main - preparing queries");
   var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate);
-  debugger;
   callback(null, twitterQueryCollections);
 };
 
