@@ -30,7 +30,6 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, sinceDate){
 		});
 
 		var twitterQueryCollection = new TwitterQueryCollection(seedQueries, seed._id);
-		debugger;
 		queries.push(twitterQueryCollection);
 	});
 
