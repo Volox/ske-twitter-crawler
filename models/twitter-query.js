@@ -28,7 +28,7 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, sinceDate){
 			var twitterQuery = new TwitterQuery(twitterTerm, sinceDate, false);
 			seedQueries.push(twitterQuery);
 		});
-		
+		debugger;
 		var twitterQueryCollection = new TwitterQueryCollection(seedQueries, seed._id);
 		queries.push(twitterQueryCollection);
 
