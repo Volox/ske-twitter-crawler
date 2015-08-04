@@ -13,17 +13,17 @@ var Seed  = require('../models/db/seed.js');
 // 1. 
 var retrieveSeeds = function(callback){
   
-  logger.info("#index - retrieveing seeds");
+  logger.info("#main - retrieveing seeds");
   Seed.find(callback, function(err, seeds){
-    
+    debugger;
     if(err) {
 
-      logger.err("#index - " + err);
+      logger.err("#main - " + err);
       return callback(err);
     }
     else {
 
-      logger.info("#index - retrieved " + seeds.length + " seeds");
+      logger.info("#main - retrieved " + seeds.length + " seeds");
       return callback(null, seeds);
     }
   });
@@ -32,7 +32,7 @@ var retrieveSeeds = function(callback){
 // 2.
 var prepareQueries = function(seeds, crawlerStartDate, callback){
 
-  logger.info("#index - preparing queries");
+  logger.info("#main - preparing queries");
   var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate);
   callback(null, twitterQueryCollections);
 };
