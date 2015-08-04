@@ -14,7 +14,7 @@ var Seed  = require('../models/db/seed.js');
 var retrieveSeeds = function(callback){
   
   logger.info("#main - retrieveing seeds");
-  Seed.find(callback, function(err, seeds){
+  Seed.find( function(err, seeds){
     debugger;
     if(err) {
 
