@@ -1,4 +1,4 @@
-{
+w{
   "name": "ske-twitter-crawler",
   "version": "1.0.0",
   "description": "A NodeJS script that crawls Twitter to retrieve the tweets retrieved by searching on twitter a given set of keywords",
