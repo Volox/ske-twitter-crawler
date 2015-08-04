@@ -19,7 +19,7 @@ var crawlerStartDate = process.env.SKE_CRAWLER_START_DATE;
 if(StringUtilities.checkStringsNotEmpty([mongo.protocolHostAndPort, mongo.dbName, crawlerStartDate ])){
   
   // Slice out the Protocol prefix - i.e tcp://
-  var mongo.hostAndPort = mongo.protocolHostAndPort.slice(_.lastIndexOf(mongo.protocolHostAndPort, "/") +1 );
+  mongo.hostAndPort = mongo.protocolHostAndPort.slice(_.lastIndexOf(mongo.protocolHostAndPort, "/") +1 );
   
   // Start database
   logger.info('#index - Connecting to the database');
