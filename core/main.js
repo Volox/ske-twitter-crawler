@@ -97,6 +97,7 @@ exports = module.exports = {
   
   start:function(crawlerStartDate, callback){
 
+    pPrepareQueries = _.partial(prepareQueries, _, crawlerStartDate);
     async.waterfall([retrieveSeeds, pPrepareQueries, retrieveAndSaveTweets], callback);
   }
 };
