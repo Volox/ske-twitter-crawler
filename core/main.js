@@ -15,7 +15,7 @@ var retrieveSeeds = function(callback){
   
   logger.info("#main - retrieveing seeds");
   Seed.find( function(err, seeds){
-    debugger;
+    //debugger;
     if(err) {
 
       logger.err("#main - " + err);
