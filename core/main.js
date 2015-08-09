@@ -34,7 +34,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 
   logger.info("#main - preparing queries");
   var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate);
-  
+  debugger;
   if(twitterQueryCollections) {
 
     callback(null, twitterQueryCollections);
@@ -45,7 +45,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
     logger.error(error);
     callback(error);
   }
-  
+
 };
 
 // 3. 
