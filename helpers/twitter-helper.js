@@ -64,7 +64,7 @@ var self = module.exports = {
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
 
-    logger.info('#twitter-helper - querying the web');
+    logger.info('#twitter-helper - querying the web '+  JSON.stringify(query));
 
     phantom.create(function(ph) {
       
@@ -76,7 +76,7 @@ var self = module.exports = {
 
         page.onConsoleMessage = function(msg) {
           
-          // logger.info("#twitter-helper - " + msg);
+           logger.info("#twitter-helper - " + msg);
         };
 
         page.open(url, function(status) {
@@ -119,10 +119,9 @@ var self = module.exports = {
 
                 } else {
                   
-                  //logger.info('#twitter-helper - Need to go on');
+                  logger.info('#twitter-helper - Need to go on');
                 }
               });
-
             }, 1500); // Number of milliseconds to wait between scrolls
           }
           else { 
