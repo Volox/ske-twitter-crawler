@@ -63,7 +63,7 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
     async.eachSeries(batchedTwitterQueries, function(twitterQueriesBatch, secondCallback){
         
         // Execute the group of 10-queries in parallel
-        asyn.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
+        async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
 
           var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
           var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
