@@ -1,6 +1,7 @@
 
 var phantom = require('phantom');
 var cheerio = require('cheerio');
+var async = require('async');
 var _       = require("underscore");
 var querystring = require("querystring");
 var logger  = require('../core/logger');
@@ -62,7 +63,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var self = this;
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
-
+    
     phantom.create(function (ph) {
       
       ph.createPage(function (page) {
@@ -71,53 +72,40 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
           
           if(status === 'success'){
             
-           self.retryOnceFlag = true;
+            self.retryOnceFlag = true;
+            var html = undefined;
 
-            var interval = setInterval(function() {
-              logger.info('#twitter-helper - '+JSON.stringify(query));
-              page.evaluate(function() {
-                
-                window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+            async.during( 
 
-                var count = $("#stream-items-id .tweet").length;
-                var endTag = $('.stream-end');
-                var end = false;
-                if (endTag) {
-                  end = (endTag.css('display') !== 'none');
-                }
-                var html = document.body.innerHTML;
+              function(innerCallback){
 
-                return {
-                  count: count,
-                  html: html,
-                  end: end
-                };
-              }, function(result) {
-                
-                if (result.end) {
+                page.evaluate(function() {
                   
-                  //logger.info('#twitter-helper - Finished scrolling');
-                  clearInterval(interval);
-                  ph.exit();
-                  var tweets = self.parseTweetsFromHTML(result.html);
-                 
-                  logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
-                  debugger;
-                  return callback(null, tweets);
+                  window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+                  var endTag = $('.stream-end');
+                  return (endTag && endTag.css('display') !== 'none')?document.body.innerHTML:undefined;
 
-                } else {
-                  
-                  logger.info('#twitter-helper - Need to go on');
-                }
-              });
-            }, 3000); // Number of milliseconds to wait between scrolls
+                },function(result) {
+
+                  html = result;
+                  return innerCallback(null, _.isUndefined(html));
+                });
+              }, 
+              function(innerCallback) {
+
+                setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
+              }, 
+              function(err){
+                
+                ph.exit();
+                var tweets = self.parseTweetsFromHTML(html);
+                logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+                return callback(null, tweets);
+              }
+            );
           }
           else { 
             
-            /*var error = new Error('Phantom Error. page.open returned : ' +  status);
-            logger.error("#twitter-helper - " + error);
-            return callback(error, null);*/
-
             if(self.retryOnceFlag){
 
               self.retryOnceFlag = false;
@@ -126,10 +114,11 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
             } 
             else {
 
-                logger.info('#twitter-helper - Finshed scraping URL. Found: 0 tweets');
-                return callback(null, []);
+                logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
+                callback(null, []);
             }
-          }  
+          }
+
         });
       });
     });
@@ -215,7 +204,6 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         });
       });
     });*/
-
 };
 
 exports = module.exports = TwitterHelper;

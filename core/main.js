@@ -12,7 +12,7 @@ var Tweet = require('../models/db/tweet.js');
 var Seed = require('../models/db/seed.js');
 
 // 1. 
-var retrieveSeeds = function(callback){
+var retrieveSeeds = function(callback) {
   
   logger.info("#main - retrieveing seeds");
   Seed.find( function(err, seeds){
@@ -31,7 +31,7 @@ var retrieveSeeds = function(callback){
 };
 
 // 2.
-var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback){
+var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback) {
 
   logger.info("#main - preparing queries");
   var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate);
@@ -48,7 +48,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 };
 
 // 3.
-var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
+var retrieveAndSaveTweets = function(twitterQueryCollections, callback) {
   
   logger.info("#main - retrieving and  saving tweets");
   async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
@@ -92,7 +92,7 @@ var retrieveTweets = function(twitterQueryCollection, callback){
 
             seedTweets = seedTweets.concat(tweets);
           }
-          
+
           return secondCallback(null);        
         });
         //logger.debug("#main - here");
@@ -131,7 +131,7 @@ var saveTweets = function(tweets, seedId, callback){
       
       tweet.seed = seedId;
     });
-
+    
     Tweet.create(tweets, function(err, result) {
 
       // Manage duplicated key errors.
