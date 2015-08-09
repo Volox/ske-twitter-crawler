@@ -54,7 +54,7 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
   logger.info("#index - retrieving and  saving tweets");
   
   // Execute collections in series
-  async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, nextSeed){
+  async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
 
     logger.info("Crawling tweets for seed: " + twitterQueryCollection.seedId);
 
@@ -63,36 +63,36 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
     var seedTweets = [];
 
     // Execute each group in series
-    async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, nextBatch){
+    async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, secondCallback){
         
         logger.info("Executing batch :" + key + "/" + batchedTwitterQueries.length);
 
         // Execute the group of 10-queries in parallel
-        async.each(twitterQueriesBatch, function(twitterQuery, nextQuery){
+        async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
 
           TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
             
             if(err){
-              return nextQuery(err);
+              return thirdCallback(err);
             }
             debugger;
             seedTweets = seedTweets.concat(tweets);
-            return nextQuery(null);
+            return thirdCallback(null);
           });
 
           //var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
           //var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
           //async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
-        }, nextBatch);  
+        }, secondCallback);  
 
     }, function(err){
       
       if(err) {
 
-        return nextSeed(err);
+        return firstCallback(err);
       }
 
-      return saveTweets(seedTweets, twitterQueryCollection.seedId, nextSeed);
+      return saveTweets(seedTweets, twitterQueryCollection.seedId, firstCallback);
 
     });
 
