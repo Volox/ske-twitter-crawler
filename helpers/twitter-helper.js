@@ -114,7 +114,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                   var tweets = self.parseTweetsFromHTML(result.html);
                   //logger.info('#twitter-helper - '+JSON.stringify(query));
                   logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
-                  return callback(null, tweets);
+                  callback(null, tweets);
 
                 } else {
                   
