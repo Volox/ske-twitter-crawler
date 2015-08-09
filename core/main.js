@@ -45,43 +45,61 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
     logger.error(error);
     callback(error);
   }
-
 };
 
-// 3. 
+// 3.
 var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
   
-  logger.info("#index - retrieving and  saving tweets");
-  debugger;
-  // Execute collections in series
+  logger.info("#main - retrieving and  saving tweets");
   async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
 
-    logger.info("Crawling tweets for seed: " + twitterQueryCollection.seedId);
-
-    // Create groups of 10 queries
-    var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
-
-    // Execute each group in series
-    async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, secondCallback){
-        
-        logger.info("Executing batch :" + key + "/" + batchedTwitterQueries.length);
-
-        // Execute the group of 10-queries in parallel
-        async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
-
-          var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
-          var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
-          async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
-
-        }, secondCallback);
-       
-
-    }, firstCallback);
+    var pRetrieveTweets = _.partial(retrieveTweets, twitterQueryCollection );
+    var pTwitterSaver = _.partial(saveTweets, _, twitterQueryCollection.seedId);
+    async.waterfall([pRetrieveTweets, pTwitterSaver], firstCallback);
 
   }, callback);
+}
+
+// 3.1
+var retrieveTweets = function(twitterQueryCollection, callback){
+  
+  logger.info("#main - Retrieving tweets for seed: " + twitterQueryCollection.seedId);
+
+  // Create groups of 10 queries
+  var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
+  
+  // Emtpy array to collect the retrieved tweets
+  var seedTweets = [];
+  
+  // Execute each group in series
+  async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, firstCallback){
+      
+      logger.info("#main - Executing batch :" + key + "/" + batchedTwitterQueries.length);
+
+      // Execute the group of 10-queries in parallel
+      async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
+
+        TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
+          if(err){
+            return thirdCallback(err);
+          }
+
+          seedTweets.concat(tweets);
+          return thirdCallback(null);
+        });
+
+      }, firstCallback);   
+  }, function(err){
+    
+    if(err){
+      return callback(err);
+    }
+
+    return callback(null, seedTweets);
+  });
 };
 
-// 4. 
+// 3.2
 var saveTweets = function(tweets, seedId, callback){
 
   if(!_.isArray(tweets)) {
