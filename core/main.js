@@ -54,29 +54,49 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
   logger.info("#index - retrieving and  saving tweets");
   
   // Execute collections in series
-  async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
+  async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, nextSeed){
 
     logger.info("Crawling tweets for seed: " + twitterQueryCollection.seedId);
 
     // Create groups of 10 queries
     var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
+    var seedTweets = [];
 
     // Execute each group in series
-    async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, secondCallback){
+    async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, nextBatch){
         
         logger.info("Executing batch :" + key + "/" + batchedTwitterQueries.length);
 
         // Execute the group of 10-queries in parallel
-        async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
+        async.each(twitterQueriesBatch, function(twitterQuery, nextQuery){
 
-          var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
-          var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
-          async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
+          TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
+            
+            if(err){
+              return nextQuery(err)
+            }
 
-        }, secondCallback);
+            seedTweets = seedTweets.concat(tweets);
+            return nextQuery(null);
+          });
+
+          //var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
+          //var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
+          //async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
+
+        }, nextBatch);
        
 
-    }, firstCallback);
+    }, function(err){
+      
+      if(err) {
+
+        return nextSeed(err);
+      }
+
+      saveTweets(seedTweets, twitterQueryCollection.seedId, nextSeed);
+
+    });
 
   }, callback);
 };
@@ -92,7 +112,7 @@ var saveTweets = function(tweets, seedId, callback){
   }
   else if(_.isEmpty(tweets)) {
 
-    //logger.info("#index - Couldn't find any tweets for the seed: " + seedId);
+    logger.info("#index - Couldn't find any tweets for the seed: " + seedId);
     return callback(null);
   }
   else {
