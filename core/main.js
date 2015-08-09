@@ -37,6 +37,11 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
   var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate);
   if(twitterQueryCollections) {
 
+    var queriesCount = _.reduce(_.pluck(twitterQueryCollections, 'queries'), function(memo, array){
+      return memo+array.length;
+    }, 0);
+
+    logger.info("#main - prepared " + queriesCount +" queries");
     callback(null, twitterQueryCollections);
   }
   else{
@@ -95,9 +100,7 @@ var retrieveTweets = function(twitterQueryCollection, callback){
 
           return secondCallback(null);        
         });
-        //logger.debug("#main - here");
-        //secondCallback(null);
-
+ 
       }, firstCallback);   
   }, function(err){
     
@@ -131,7 +134,7 @@ var saveTweets = function(tweets, seedId, callback){
       
       tweet.seed = seedId;
     });
-    
+
     Tweet.create(tweets, function(err, result) {
 
       // Manage duplicated key errors.
