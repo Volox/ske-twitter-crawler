@@ -12,7 +12,7 @@ var computeDates = function (since, until, times, res){
 		'until':until.format('YYYY-MM-DD')
 	});
 
-	computeDates(since.add(1, 'd'), until.add(1, 'd'), times--, res);
+	return computeDates(since.add(1, 'd'), until.add(1, 'd'), times--, res);
 };
 
 exports = module.exports = {
