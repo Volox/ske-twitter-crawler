@@ -110,7 +110,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                   logger.info('#twitter-helper - Need to go on');
                 }
               });
-            }, 1500); // Number of milliseconds to wait between scrolls
+            }, 3000); // Number of milliseconds to wait between scrolls
           }
           else { 
             
