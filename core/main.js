@@ -63,7 +63,7 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
     async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, secondCallback){
         
         logger.info("Executing batch :" + key + "/" + batchedTwitterQueries.length);
-        
+
         // Execute the group of 10-queries in parallel
         async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
 
@@ -90,7 +90,7 @@ var saveTweets = function(tweets, seedId, callback){
   }
   else if(_.isEmpty(tweets)) {
 
-    logger.info("#index - Couldn't find any tweets for the seed: " + seedId);
+    //logger.info("#index - Couldn't find any tweets for the seed: " + seedId);
     return callback(null);
   }
   else {
