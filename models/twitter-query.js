@@ -1,17 +1,20 @@
 var _ = require("underscore");
 var TwitterQueryCollection = require("./twitter-query-collection");
+var MomentHelper = require("../helpers/moment-helper");
 
-var TwitterQuery = function(searchTerm, sinceDate, isHandle){
+var TwitterQuery = function(searchTerm, sinceDate, untilDate, isHandle){
 	
 	this.f = 'realtime';
 	this.src = 'typd';
 	this.q = isHandle ? 'from:':'';
-	this.q += searchTerm + ' since:' + sinceDate;
+	this.q += searchTerm + ' since:' + sinceDate + ' until:'+untilDate;
 };
 
-TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, sinceDate){
+TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, since, until){
 
 	var queries = [];
+	// obtains all the ranges of one day from: 'since' to 'until'.
+	var dates = MomentHelper.computeOneDayDateRanges(since, until);
 
 	_.each(seeds, function(seed){
 		
@@ -21,12 +24,18 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, sinceDate){
 
 			if(_.first(twitterTerm) === "@") {
 
-				var twitterQuery = new TwitterQuery(twitterTerm, sinceDate, true);
-				seedQueries.push(twitterQuery);
-			}
+				_.each(dates, function(date){
 
-			var twitterQuery = new TwitterQuery(twitterTerm, sinceDate, false);
-			seedQueries.push(twitterQuery);
+					var twitterQuery = new TwitterQuery(twitterTerm, date.since, date.until, true);
+					seedQueries.push(twitterQuery);
+						
+				});
+			}
+			_.each(dates, function(date){
+				
+				var twitterQuery = new TwitterQuery(twitterTerm, date.since, date.until, false);
+				seedQueries.push(twitterQuery);	
+			});
 		});
 
 		var twitterQueryCollection = new TwitterQueryCollection(seedQueries, seed._id);

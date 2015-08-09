@@ -1,14 +1,14 @@
 
-var async  = require('async');
-var _      = require("underscore");
+var async = require('async');
+var _ = require("underscore");
 var logger = require("./logger");
 
-var TwitterHelper           = require("../helpers/twitter-helper");
-var TwitterQuery            = require("../models/twitter-query");
-var TwitterQueryCollection  = require("../models/twitter-query-collection");
+var TwitterHelper = require("../helpers/twitter-helper");
+var TwitterQuery = require("../models/twitter-query");
+var TwitterQueryCollection = require("../models/twitter-query-collection");
 
 var Tweet = require('../models/db/tweet.js');
-var Seed  = require('../models/db/seed.js');
+var Seed = require('../models/db/seed.js');
 
 // 1. 
 var retrieveSeeds = function(callback){
@@ -18,7 +18,7 @@ var retrieveSeeds = function(callback){
     
     if(err) {
 
-      logger.err("#main - " + err);
+      logger.error("#main - " + err);
       return callback(err);
     }
     else {
@@ -30,11 +30,22 @@ var retrieveSeeds = function(callback){
 };
 
 // 2.
-var prepareQueries = function(seeds, crawlerStartDate, callback){
+var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback){
 
   logger.info("#main - preparing queries");
-  var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate);
-  callback(null, twitterQueryCollections);
+  var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate);
+  
+  if(twitterQueryCollections) {
+
+    callback(null, twitterQueryCollections);
+  }
+  else{
+
+    var error = new Error("#main - creating queries");
+    logger.error(error);
+    callback(error);
+  }
+  
 };
 
 // 3. 
@@ -95,9 +106,9 @@ var saveTweets = function(tweets, seedId, callback){
 
 exports = module.exports = {
   
-  start:function(crawlerStartDate, callback){
+  start:function(crawler, callback){
 
-    pPrepareQueries = _.partial(prepareQueries, _, crawlerStartDate);
+    pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
     async.waterfall([retrieveSeeds, pPrepareQueries, retrieveAndSaveTweets], callback);
   }
 };

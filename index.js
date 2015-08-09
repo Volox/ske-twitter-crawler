@@ -11,12 +11,17 @@ var mongo = {
   
   'protocolHostAndPort':process.env.MONGO_PORT,
   'dbName': process.env.SKE_DATABASE_NAME
-}
+};
 
-var crawlerStartDate = process.env.SKE_CRAWLER_START_DATE;
+var crawler = {
+  'startDate': process.env.SKE_CRAWLER_START_DATE,
+  'endDate': process.env.SKE_CRAWLER_END_DATE
+};
+
+var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName, crawler.startDate, crawler.endDate];
 
 // Check if environment variables have been set
-if(StringUtilities.checkStringsNotEmpty([mongo.protocolHostAndPort, mongo.dbName, crawlerStartDate ])){
+if(StringUtilities.checkStringsNotEmpty(requiredVariables)){
   
   // Slice out the Protocol prefix - i.e tcp://
   mongo.hostAndPort = mongo.protocolHostAndPort.slice(_.lastIndexOf(mongo.protocolHostAndPort, "/") +1 );
@@ -28,7 +33,7 @@ if(StringUtilities.checkStringsNotEmpty([mongo.protocolHostAndPort, mongo.dbName
   
   db.once('open', function() {
     
-    main.start(crawlerStartDate, function(err, result){
+    main.start(crawler, function(err, result){
 
       if(err) {
 
