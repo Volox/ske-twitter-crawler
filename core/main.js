@@ -73,9 +73,9 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
           TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
             
             if(err){
-              return nextQuery(err)
+              return nextQuery(err);
             }
-
+            debugger;
             seedTweets = seedTweets.concat(tweets);
             return nextQuery(null);
           });
@@ -83,9 +83,7 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
           //var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
           //var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
           //async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
-
-        }, nextBatch);
-       
+        }, nextBatch);  
 
     }, function(err){
       
@@ -94,7 +92,7 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
         return nextSeed(err);
       }
 
-      saveTweets(seedTweets, twitterQueryCollection.seedId, nextSeed);
+      return saveTweets(seedTweets, twitterQueryCollection.seedId, nextSeed);
 
     });
 
