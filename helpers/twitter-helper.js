@@ -62,9 +62,63 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var self = this;
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
-    callback(null, []);
+    // callback(null, []);
     // logger.info('#twitter-helper - querying the web '+  JSON.stringify(query));
+    
+    phantom.create(function (ph) {
+      
+      ph.createPage(function (page) {
+        
+        page.open(url, function (status) {
+          
+          if(status === 'success'){
+            
+           self.retryOnceFlag = true;
+
+            var interval = setInterval(function() {
+
+              page.evaluate(function() {
+                
+                window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+
+                var count = $("#stream-items-id .tweet").length;
+                var endTag = $('.stream-end');
+                var end = false;
+                if (endTag) {
+                  end = (endTag.css('display') !== 'none');
+                }
+                var html = document.body.innerHTML;
+
+                return {
+                  count: count,
+                  html: html,
+                  end: end
+                };
+              }, function(result) {
+                
+                if (result.end) {
+                  
+                  //logger.info('#twitter-helper - Finished scrolling');
+                  clearInterval(interval);
+                 
+                  var tweets = self.parseTweetsFromHTML(result.html);
+                  //logger.info('#twitter-helper - '+JSON.stringify(query));
+                  logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+                  ph.exit();
+                  return callback(null, tweets);
+                } else {
+                  
+                  logger.info('#twitter-helper - Need to go on');
+                }
+              });
+            }, 1500); // Number of milliseconds to wait between scrolls
+          }
+          
+        });
+      });
+    });
     /*
+
     phantom.create(function(ph) {
       
       //logger.info('#crawler - Initalizing phantom');
