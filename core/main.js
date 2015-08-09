@@ -6,6 +6,7 @@ var logger = require("./logger");
 var TwitterHelper = require("../helpers/twitter-helper");
 var TwitterQuery = require("../models/twitter-query");
 var TwitterQueryCollection = require("../models/twitter-query-collection");
+var ArrayUtilities = require("../utilities/array-utilities");
 
 var Tweet = require('../models/db/tweet.js');
 var Seed = require('../models/db/seed.js');
@@ -34,7 +35,6 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 
   logger.info("#main - preparing queries");
   var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate);
-  debugger;
   if(twitterQueryCollections) {
 
     callback(null, twitterQueryCollections);
@@ -52,14 +52,25 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
   
   logger.info("#index - retrieving and  saving tweets");
-  async.each(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
+  
+  // Execute collections in series
+  async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
 
-    async.each(twitterQueryCollection.queries, function(twitterQuery, secondCallback){
+    // Create groups of 10 queries
+    var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
+
+    // Execute each group in series
+    async.eachSeries(batchedTwitterQueries, function(twitterQueriesBatch, secondCallback){
         
-        var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
-        var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
+        // Execute the group of 10-queries in parallel
+        asyn.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
 
-        async.waterfall([partialTwitterCrawler, partialTwitterSaver], secondCallback);
+          var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
+          var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
+          async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
+
+        }, secondCallback);
+       
 
     }, firstCallback);
 
