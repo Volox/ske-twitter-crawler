@@ -113,8 +113,10 @@ var self = module.exports = {
                   clearInterval(interval);
                   ph.exit();
                   var tweets = parseTweetsFromHTML(result.html);
+                  logger.inf('#twitter-helper - '+JSON.stringify(query));
                   logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
                   return callback(null, tweets);
+
                 } else {
                   
                   //logger.info('#twitter-helper - Need to go on');
@@ -128,6 +130,7 @@ var self = module.exports = {
             /*var error = new Error('Phantom Error. page.open returned : ' +  status);
             logger.error("#twitter-helper - " + error);
             return callback(error, null);*/
+
             if(self.retryOnceFlag){
 
               self.retryOnceFlag = false;
