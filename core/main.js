@@ -81,7 +81,7 @@ var retrieveTweets = function(twitterQueryCollection, callback){
 
         TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
           logger.debug("#main - here");
-          // secondCallback(null);
+          secondCallback(null);
         });
         //logger.debug("#main - here");
         //secondCallback(null);
