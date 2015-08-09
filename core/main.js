@@ -60,7 +60,6 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
 
     // Create groups of 10 queries
     var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
-    var seedTweets = [];
 
     // Execute each group in series
     async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, secondCallback){
@@ -70,32 +69,14 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
         // Execute the group of 10-queries in parallel
         async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
 
-          TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
-            
-            if(err){
-              debugger;
-              return thirdCallback(err);
-            }
-            
-            seedTweets = seedTweets.concat(tweets);
-            return thirdCallback(null);
-          });
+          var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
+          var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
+          async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
 
-          //var partialTwitterCrawler = _.partial(TwitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
-          //var partialTwitterSaver   = _.partial(saveTweets, _, twitterQueryCollection.seedId);
-          //async.waterfall([partialTwitterCrawler, partialTwitterSaver], thirdCallback);
-        }, secondCallback);  
+        }, secondCallback);
+       
 
-    }, function(err){
-      
-      if(err) {
-
-        return firstCallback(err);
-      }
-
-      return saveTweets(seedTweets, twitterQueryCollection.seedId, firstCallback);
-
-    });
+    }, firstCallback);
 
   }, callback);
 };
