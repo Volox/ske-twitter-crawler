@@ -84,10 +84,10 @@ var retrieveTweets = function(twitterQueryCollection, callback){
         twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
           
           if(err) {
-            
+
             return secondCallback(err);
           }
-          
+          debugger;
           seedTweets = seedTweets.concat(tweets);
           return secondCallback(null);
         });
