@@ -64,6 +64,8 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
     
+    logger.info('#main - queryig twitter');
+    
     phantom.create(function (ph) {
       
       ph.createPage(function (page) {

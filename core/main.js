@@ -40,7 +40,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
     var queriesCount = _.reduce(_.pluck(twitterQueryCollections, 'queries'), function(memo, array){
       return memo+array.length;
     }, 0);
-    debugger;
+    
     logger.info("#main - prepared " + queriesCount +" queries");
     callback(null, twitterQueryCollections);
   }
