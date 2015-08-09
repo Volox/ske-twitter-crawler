@@ -52,7 +52,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
   
   logger.info("#index - retrieving and  saving tweets");
-  
+  debugger;
   // Execute collections in series
   async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
 
