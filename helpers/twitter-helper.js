@@ -113,7 +113,7 @@ var self = module.exports = {
                   clearInterval(interval);
                   ph.exit();
                   var tweets = parseTweetsFromHTML(result.html);
-                  logger.inf('#twitter-helper - '+JSON.stringify(query));
+                  logger.info('#twitter-helper - '+JSON.stringify(query));
                   logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
                   return callback(null, tweets);
 
