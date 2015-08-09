@@ -1,7 +1,7 @@
 var moment = require('moment');
 var _ = require('underscore');
 
-computeDates:function (since, until, times, res){
+var computeDates = function (since, until, times, res){
 	
 	if(times === 0){
 		return res;
