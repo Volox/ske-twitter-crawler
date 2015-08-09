@@ -14,8 +14,6 @@ var parseTweetsFromHTML = function(html) {
 
   var $tweets = $("#stream-items-id .tweet");
 
-  logger.info('#twitter-helper - Retrieved ' + $tweets.length + ' tweets');
-
   var tweets = _.map($tweets, function(element) {
 
     var $tweet = $(element);
@@ -66,7 +64,7 @@ exports = module.exports = {
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
 
-    logger.info('#crawler - querying the web');
+    logger.info('#twitter-helper - querying the web');
 
     phantom.create(function(ph) {
       
@@ -88,7 +86,7 @@ exports = module.exports = {
           if(status === "success") {
 
             retryOnceFlag = true;
-            
+
             var interval = setInterval(function() {
 
               page.evaluate(function() {
@@ -114,9 +112,8 @@ exports = module.exports = {
                   //logger.info('#twitter-helper - Finished scrolling');
                   clearInterval(interval);
                   ph.exit();
-
                   var tweets = parseTweetsFromHTML(result.html);
-                  logger.info('#twitter-helper - Finshed scraping URL. Found: ' + tweets.length + ' tweets');
+                  logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
                   return callback(null, tweets);
                 } else {
                   
@@ -134,7 +131,7 @@ exports = module.exports = {
             if(retryOnceFlag){
 
               retryOnceFlag = false;
-              logger.info('#twitter-helper - Phantom Error. page.open returned : ' +  status);
+              logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
               scrapeTweetsFromSearchResult(query, callback);  
             } 
             else {

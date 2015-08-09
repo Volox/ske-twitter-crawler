@@ -60,7 +60,9 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
     var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
 
     // Execute each group in series
-    async.eachSeries(batchedTwitterQueries, function(twitterQueriesBatch, secondCallback){
+    async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, secondCallback){
+        
+        logger.info("Executing batch :" + key + "/" + batchedTwitterQueries.length);
         
         // Execute the group of 10-queries in parallel
         async.each(twitterQueriesBatch, function(twitterQuery, thirdCallback){
