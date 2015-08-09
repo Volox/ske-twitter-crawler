@@ -59,7 +59,7 @@ exports = module.exports = {
   // scrolls the page every 15000 ms.
   // @url - The twitter URL that should be scraped
   // @callback - A function that receives (error, result) parameters.
-  scrapeTweetsFromSearchResult:function(query, callback) {
+  'scrapeTweetsFromSearchResult':function(query, callback) {
     
     var self = this;
     var url = 'https://twitter.com/search?';
@@ -130,7 +130,7 @@ exports = module.exports = {
             logger.error("#twitter-helper - " + error);
             return callback(error, null);*/
             if(self.retryOnceFlag){
-
+              debugger;
               self.retryOnceFlag = false;
               logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
               self.scrapeTweetsFromSearchResult(query, callback);  
