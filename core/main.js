@@ -56,6 +56,8 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
   // Execute collections in series
   async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
 
+    logger.info("Crawling tweets for seed: " + twitterQueryCollection.seedId);
+
     // Create groups of 10 queries
     var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
 
