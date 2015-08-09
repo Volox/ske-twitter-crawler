@@ -51,7 +51,7 @@ var parseTweetsFromHTML = function(html) {
   return tweets;
 };
 
-var self = exports = module.exports = {
+var self = module.exports = {
 
   retryOnceFlag:true,
   // Async method. Navigates to the given URL parsing 
@@ -129,7 +129,7 @@ var self = exports = module.exports = {
             logger.error("#twitter-helper - " + error);
             return callback(error, null);*/
             if(self.retryOnceFlag){
-              
+
               self.retryOnceFlag = false;
               logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
               self.scrapeTweetsFromSearchResult(query, callback);  
