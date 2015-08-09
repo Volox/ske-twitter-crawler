@@ -62,9 +62,9 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var self = this;
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
-
+    callback(null, []);
     // logger.info('#twitter-helper - querying the web '+  JSON.stringify(query));
-
+    /*
     phantom.create(function(ph) {
       
       //logger.info('#crawler - Initalizing phantom');
@@ -125,7 +125,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
           }
           else { 
             
-            /*var error = new Error('Phantom Error. page.open returned : ' +  status);
+            var error = new Error('Phantom Error. page.open returned : ' +  status);
             logger.error("#twitter-helper - " + error);
             return callback(error, null);
 
@@ -139,12 +139,13 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
 
                 logger.info('#twitter-helper - Finshed scraping URL. Found: 0 tweets');
                 callback(null, []);
-            }*/
+            }
             
           }
         });
       });
-    });
+    });*/
+
 };
 
 exports = module.exports = TwitterHelper;

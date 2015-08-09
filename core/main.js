@@ -82,15 +82,18 @@ var retrieveTweets = function(twitterQueryCollection, callback){
         var twitterHelper = new TwitterHelper();
 
         twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
-          
-          /*if(!_.isNull(err)) {
+
+          if(err) {
 
             return secondCallback(err);
           }
-          debugger;
-          seedTweets = seedTweets.concat(tweets);
-          return secondCallback(null);*/
-          logger.debug("#main - here");
+          
+          if(!_.isEmpty(tweets)){
+
+            seedTweets = seedTweets.concat(tweets);
+          }
+          
+          return secondCallback(null);        
         });
         //logger.debug("#main - here");
         //secondCallback(null);
