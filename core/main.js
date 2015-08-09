@@ -79,7 +79,8 @@ var retrieveTweets = function(twitterQueryCollection, callback){
       // Execute the group of 10-queries in parallel
       async.each(twitterQueriesBatch, function(twitterQuery, secondCallback){
 
-        TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, secondCallback);
+        //TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, secondCallback);
+        secondCallback(null);
 
       }, firstCallback);   
   }, function(err){
