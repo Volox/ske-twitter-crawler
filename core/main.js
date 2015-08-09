@@ -80,6 +80,7 @@ var retrieveTweets = function(twitterQueryCollection, callback){
       async.each(twitterQueriesBatch, function(twitterQuery, secondCallback){
 
         //TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, secondCallback);
+        logger.debug("#main - here");
         secondCallback(null);
 
       }, firstCallback);   
