@@ -73,9 +73,10 @@ var retrieveAndSaveTweets = function(twitterQueryCollections, callback){
           TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
             
             if(err){
+              debugger;
               return thirdCallback(err);
             }
-            debugger;
+            
             seedTweets = seedTweets.concat(tweets);
             return thirdCallback(null);
           });
