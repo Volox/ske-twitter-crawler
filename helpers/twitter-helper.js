@@ -55,6 +55,7 @@ var parseTweetsFromHTML = function(html) {
 
 exports = module.exports = {
 
+  retryOnceFlag:true,
   // Async method. Navigates to the given URL parsing 
   // HTML the elements with a .tweet class. The function also
   // scrolls the page every 15000 ms.
@@ -86,6 +87,8 @@ exports = module.exports = {
 
           if(status === "success") {
 
+            retryOnceFlag = true;
+            
             var interval = setInterval(function() {
 
               page.evaluate(function() {
@@ -128,11 +131,21 @@ exports = module.exports = {
             /*var error = new Error('Phantom Error. page.open returned : ' +  status);
             logger.error("#twitter-helper - " + error);
             return callback(error, null);*/
-            scrapeTweetsFromSearchResult(query, callback);
+            if(retryOnceFlag){
+
+              retryOnceFlag = false;
+              logger.info('#twitter-helper - Phantom Error. page.open returned : ' +  status);
+              scrapeTweetsFromSearchResult(query, callback);  
+            } 
+            else {
+
+                logger.info('#twitter-helper - Finshed scraping URL. Found: 0 tweets');
+                return callback(null, []);
+            }
+            
           }
         });
       });
     });
   }
-
 };
