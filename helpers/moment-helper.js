@@ -40,8 +40,9 @@ exports = module.exports = {
 
 			var sinceDate = moment(since, 'YYYY-MM-DD');
 			var untilDate = moment(until, 'YYYY-MM-DD');
+			var firstStep = moment(since, 'YYYY-MM-DD').add(1, 'd');
 			var days = parseInt(moment.duration(untilDate.diff(sinceDate)).asDays());
-			return computeDates(sinceDate, sinceDate.add(1, 'd'), days, []);
+			return computeDates(sinceDate, firstStep, days, []);
 		}	
 
 		return undefined;
