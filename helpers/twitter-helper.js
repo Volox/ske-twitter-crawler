@@ -69,20 +69,20 @@ exports = module.exports = {
 
     phantom.create(function(ph) {
       
-      logger.info('#crawler - Initalizing phantom');
+      //logger.info('#crawler - Initalizing phantom');
       
       ph.createPage(function(page) {
         
-        logger.info('#twitter-helper - Creating the page');
+        //logger.info('#twitter-helper - Creating the page');
 
         page.onConsoleMessage = function(msg) {
           
-          logger.info("#twitter-helper - " + msg);
+          // logger.info("#twitter-helper - " + msg);
         };
 
         page.open(url, function(status) {
 
-          logger.info("#twitter-helper - Opened page? ", status);
+          // logger.info("#twitter-helper - Opened page? ", status);
 
           if(status === "success") {
 
@@ -108,24 +108,27 @@ exports = module.exports = {
               }, function(result) {
                 if (result.end) {
                   
-                  logger.info('#twitter-helper - Finished scrolling');
+                  //logger.info('#twitter-helper - Finished scrolling');
                   clearInterval(interval);
-                  logger.info('#twitter-helper - Exiting from phantom');
                   ph.exit();
 
                   var tweets = parseTweetsFromHTML(result.html);
+                  logger.info('#twitter-helper - Finshed scraping URL. Found: ' + tweets.length + ' tweets');
                   return callback(null, tweets);
                 } else {
-                  logger.info('#twitter-helper - Need to go on');
+                  
+                  //logger.info('#twitter-helper - Need to go on');
                 }
               });
 
             }, 1500); // Number of milliseconds to wait between scrolls
           }
           else { 
-            var error = new Error('Phantom Error. page.open returned : ' +  status);
+            
+            /*var error = new Error('Phantom Error. page.open returned : ' +  status);
             logger.error("#twitter-helper - " + error);
-            return callback(error, null);
+            return callback(error, null);*/
+            scrapeTweetsFromSearchResult(query, callback);
           }
         });
       });
