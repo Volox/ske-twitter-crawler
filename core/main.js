@@ -77,14 +77,19 @@ var retrieveTweets = function(twitterQueryCollection, callback){
       logger.info("#main - Executing batch :" + key + "/" + batchedTwitterQueries.length);
 
       // Execute the group of 10-queries in parallel
-      async.eachSeries(twitterQueriesBatch, function(twitterQuery, secondCallback){
+      async.each(twitterQueriesBatch, function(twitterQuery, secondCallback){
 
         var twitterHelper = new TwitterHelper();
-        
+
         twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
-          logger.debug("#main - here");
+          
+          if(err) {
+            
+            return secondCallback(err);
+          }
+          
           seedTweets = seedTweets.concat(tweets);
-          secondCallback(null);
+          return secondCallback(null);
         });
         //logger.debug("#main - here");
         //secondCallback(null);
