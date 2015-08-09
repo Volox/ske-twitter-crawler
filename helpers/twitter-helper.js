@@ -114,7 +114,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                   var tweets = self.parseTweetsFromHTML(result.html);
                   //logger.info('#twitter-helper - '+JSON.stringify(query));
                   logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
-                  return callback(null, tweets);
+                  callback(null, tweets);
 
                 } else {
                   
@@ -138,7 +138,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
             else {
 
                 logger.info('#twitter-helper - Finshed scraping URL. Found: 0 tweets');
-                return callback(null, []);
+                callback(null, []);
             }
             
           }
@@ -147,4 +147,4 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     });
 };
 
-var self = module.exports = TwitterHelper;
+exports = module.exports = TwitterHelper;
