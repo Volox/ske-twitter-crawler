@@ -79,7 +79,9 @@ var retrieveTweets = function(twitterQueryCollection, callback){
       // Execute the group of 10-queries in parallel
       async.eachSeries(twitterQueriesBatch, function(twitterQuery, secondCallback){
 
-        TwitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
+        var twitterHelper = new TwitterHelper();
+        
+        twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
           logger.debug("#main - here");
           seedTweets = seedTweets.concat(tweets);
           secondCallback(null);

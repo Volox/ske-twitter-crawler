@@ -8,7 +8,13 @@ var logger  = require('../core/logger');
 // A utility function that parses the obtained HTML, and
 // retrives all the useful information out of the found tweets
 // @html - the html-subtree that contains the tweets to parse
-var parseTweetsFromHTML = function(html) {
+
+var TwitterHelper = function(){
+
+  this.retryOnceFlag = true;
+};
+
+TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
   
   var $ = cheerio.load(html);
 
@@ -51,20 +57,13 @@ var parseTweetsFromHTML = function(html) {
   return tweets;
 };
 
-var self = module.exports = {
-
-  retryOnceFlag:true,
-  // Async method. Navigates to the given URL parsing 
-  // HTML the elements with a .tweet class. The function also
-  // scrolls the page every 15000 ms.
-  // @url - The twitter URL that should be scraped
-  // @callback - A function that receives (error, result) parameters.
-  'scrapeTweetsFromSearchResult':function(query, callback) {
+TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback) {
     
+    var self = this;
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
 
-    logger.info('#twitter-helper - querying the web '+  JSON.stringify(query));
+    // logger.info('#twitter-helper - querying the web '+  JSON.stringify(query));
 
     phantom.create(function(ph) {
       
@@ -112,8 +111,8 @@ var self = module.exports = {
                   //logger.info('#twitter-helper - Finished scrolling');
                   clearInterval(interval);
                   ph.exit();
-                  var tweets = parseTweetsFromHTML(result.html);
-                  logger.info('#twitter-helper - '+JSON.stringify(query));
+                  var tweets = self.parseTweetsFromHTML(result.html);
+                  //logger.info('#twitter-helper - '+JSON.stringify(query));
                   logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
                   return callback(null, tweets);
 
@@ -146,5 +145,6 @@ var self = module.exports = {
         });
       });
     });
-  }
 };
+
+var self = module.exports = TwitterHelper;
