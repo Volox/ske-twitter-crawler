@@ -62,9 +62,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var self = this;
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
-    // callback(null, []);
-    // logger.info('#twitter-helper - querying the web '+  JSON.stringify(query));
-    
+
     phantom.create(function (ph) {
       
       ph.createPage(function (page) {
@@ -100,12 +98,13 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                   
                   //logger.info('#twitter-helper - Finished scrolling');
                   clearInterval(interval);
-                 
+                   ph.exit();
                   var tweets = self.parseTweetsFromHTML(result.html);
                   //logger.info('#twitter-helper - '+JSON.stringify(query));
                   logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
-                  ph.exit();
+                  debugger;
                   return callback(null, tweets);
+
                 } else {
                   
                   logger.info('#twitter-helper - Need to go on');
@@ -113,7 +112,24 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
               });
             }, 1500); // Number of milliseconds to wait between scrolls
           }
-          
+          else { 
+            
+            /*var error = new Error('Phantom Error. page.open returned : ' +  status);
+            logger.error("#twitter-helper - " + error);
+            return callback(error, null);*/
+
+            if(self.retryOnceFlag){
+
+              self.retryOnceFlag = false;
+              logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
+              self.scrapeTweetsFromSearchResult(query, callback);  
+            } 
+            else {
+
+                logger.info('#twitter-helper - Finshed scraping URL. Found: 0 tweets');
+                return callback(null, []);
+            }
+          }  
         });
       });
     });
