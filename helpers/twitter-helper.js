@@ -85,6 +85,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                   
                   window.document.body.scrollTop = window.document.body.scrollTop + 10000;
                   var endTag = $('.stream-end');
+                  debugger;
                   return (endTag && endTag.css('display') !== 'none')?document.body.innerHTML:undefined;
 
                 },function(result) {
@@ -116,7 +117,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
               return self.scrapeTweetsFromSearchResult(query, callback);  
             } 
             else {
-              
+
                 ph.exit();
                 logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
                 return callback(null, []);
