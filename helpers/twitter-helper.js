@@ -86,7 +86,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                  
                   window.document.body.scrollTop = window.document.body.scrollTop + 10000;
                   var endTag = $('.stream-end');
-                  return (endTag && endTag.css('display') !== 'none')?document.body.innerHTML:undefined;
+                  return (endTag && endTag.css('display') !== 'none')?window.document.body.innerHTML:undefined;
 
                 },function(result) {
 
