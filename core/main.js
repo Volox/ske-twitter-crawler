@@ -91,17 +91,36 @@ var retrieveAndSaveTweets = function(twitterQueryCollection, callback){
       
       logger.info("#main - Executing batch :" + (key+1) + "/" + batchedTwitterQueries.length);
 
+      // Empty array to store the tweets found in the batch
+      var batchTweets = [];
+
       // Execute the group of 10-queries in parallel
       async.each(twitterQueriesBatch, function(twitterQuery, secondCallback){
 
-        // Retrieve tweets and save them
-        var twitterHelper = new TwitterHelper();
-        var pScrapeTweetsFromSearchResult =  _.bind(twitterHelper.scrapeTweetsFromSearchResult, twitterHelper, twitterQuery);//_.partial(twitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
-        var pSaveTweets = _.partial(saveTweets, _, twitterQueryCollection.seedId);
-        var steps = [pScrapeTweetsFromSearchResult, pSaveTweets];
-        async.waterfall(steps, secondCallback);
+        var twitterHelper = new TwitterHelper(); 
+        twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
+          
+          if(err){
+            return secondCallback(err);
+          }
 
-      }, firstCallback);   
+          batchTweets = batchTweets.concat(tweets);
+          return secondCallback(null);
+        });
+      
+      }, function(err){
+        if(err){
+          return firstCallback(err);
+        }
+        
+        if(!_.isEmpty(batchTweets)){
+
+          return saveTweets(tweets, twitterQueryCollection.seedId, firstCallback );
+        }
+
+        return firstCallback(null);
+      });   
+
   }, callback);
 };
 
@@ -153,7 +172,7 @@ var markSeedAsCrawled = function(seed, callback){
     return callback(error);
   }
   
-  logger.error('#main - Marking seed ' + seed._id + ' as crawled');
+  logger.info('#main - Marking seed ' + seed._id + ' as crawled');
 
   seed.crawled = true;
   seed.save(function(err){
@@ -164,7 +183,7 @@ var markSeedAsCrawled = function(seed, callback){
       return callback(err);
     }
 
-    logger.error('#main - Marked seed ' + seed._id + ' as crawled');
+    logger.info('#main - Marked seed ' + seed._id + ' as crawled');
     return callback(null);
   });
 }
