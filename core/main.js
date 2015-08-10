@@ -155,7 +155,6 @@ var saveTweets = function(tweets, seedId, callback){
     logger.info('#main - Saved ' + result.length + " tweets for seed: " + seedId);
     return callback(null);
   });
-}
 };
 
 // 4. 
