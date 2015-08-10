@@ -103,15 +103,11 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                 });
               }, 
               function(innerCallback) {
-
+                logger.info('#twitter-helper - scrolling down');
                 setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
               }, 
               function(err){
                 
-                if(_.isUndefined(html)){
-                  debugger;
-                }
-
                 ph.exit();
                 var tweets = self.parseTweetsFromHTML(html) || [];
                 logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');

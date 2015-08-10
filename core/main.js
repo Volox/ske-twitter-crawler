@@ -15,7 +15,9 @@ var Seed = require('../models/db/seed.js');
 var retrieveSeeds = function(callback) {
   
   logger.info("#main - retrieveing seeds");
-  Seed.find( function(err, seeds){
+
+  // Retrieve the seeds that have not been crawled
+  Seed.find({crawled:false}, function(err, seeds){
     
     if(err) {
 
@@ -34,6 +36,9 @@ var retrieveSeeds = function(callback) {
 var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback) {
 
   logger.info("#main - preparing queries");
+  
+  // Create an array of queries. One for each day betwee crawlerStartDate and crawlerEndDate
+  // and using all the social media handles of the seeds
   var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate);
   if(twitterQueryCollections) {
 
@@ -42,7 +47,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
     }, 0);
     
     logger.info("#main - prepared " + queriesCount +" queries");
-    callback(null, twitterQueryCollections);
+    callback(null, twitterQueryCollections, seeds);
   }
   else{
 
@@ -53,63 +58,51 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 };
 
 // 3.
-var retrieveAndSaveTweets = function(twitterQueryCollections, callback) {
+var crawlTwitter = function(twitterQueryCollections, seeds, callback) {
   
   logger.info("#main - retrieving and  saving tweets");
+
+  // Excute the crawling process in sequence for the queries associated with each seed
   async.eachSeries(twitterQueryCollections, function(twitterQueryCollection, firstCallback){
 
-    var pRetrieveTweets = _.partial(retrieveTweets, twitterQueryCollection );
-    var pTwitterSaver = _.partial(saveTweets, _, twitterQueryCollection.seedId);
-    async.waterfall([pRetrieveTweets, pTwitterSaver], firstCallback);
+    // Retrieve the seed referenced by the QueryCollection
+    var seed = _.find(seeds, function(seed){
+      return seed._id === twitterQueryCollection.seedId;
+    });
 
+    // Retrieve and save tweets. Then mark the seed as crawled
+    var pRetrieveAndSaveTweets = _.partial(retrieveAndSaveTweets, twitterQueryCollection);
+    var pMarkSeedAsCrawled = _.partial(markSeedAsCrawled, seed);
+    async.series([pRetrieveAndSaveTweets, pMarkSeedAsCrawled], firstCallback);
+    
   }, callback);
 }
 
 // 3.1
-var retrieveTweets = function(twitterQueryCollection, callback){
+var retrieveAndSaveTweets = function(twitterQueryCollection, callback){
   
   logger.info("#main - Retrieving tweets for seed: " + twitterQueryCollection.seedId);
 
   // Create groups of 10 queries
   var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
   
-  // Emtpy array to collect the retrieved tweets
-  var seedTweets = [];
-  
   // Execute each group in series
   async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, firstCallback){
       
-      logger.info("#main - Executing batch :" + key + "/" + batchedTwitterQueries.length);
+      logger.info("#main - Executing batch :" + (key+1) + "/" + batchedTwitterQueries.length);
 
       // Execute the group of 10-queries in parallel
       async.each(twitterQueriesBatch, function(twitterQuery, secondCallback){
 
+        // Retrieve tweets and save them
         var twitterHelper = new TwitterHelper();
+        var pScrapeTweetsFromSearchResult = _.partial(twitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
+        var pSaveTweets = _.partial(saveTweets, _, twitterQueryCollection.seedId);
+        var steps = [pScrapeTweetsFromSearchResult, pSaveTweets];
+        async.waterfall(steps, secondCallback);
 
-        twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
-
-          if(err) {
-
-            return secondCallback(err);
-          }
-          
-          if(!_.isEmpty(tweets)){
-
-            seedTweets = seedTweets.concat(tweets);
-          }
-
-          return secondCallback(null);        
-        });
- 
       }, firstCallback);   
-  }, function(err){
-    
-    if(err){
-      return callback(err);
-    }
-
-    return callback(null, seedTweets);
-  });
+  }, callback);
 };
 
 // 3.2
@@ -150,11 +143,37 @@ var saveTweets = function(tweets, seedId, callback){
   }
 };
 
+// 4. 
+var markSeedAsCrawled = function(seed, callback){
+  
+  if(_.isUndefined(seed)){
+
+    var error = new Error ("#main - seed cannot be undefined");
+    logger.error("#main - " + error);
+    return callback(error);
+  }
+  
+  logger.error('#main - Marking seed ' + seed._id + ' as crawled');
+
+  seed.crawled = true;
+  seed.save(function(err){
+    
+    if(err) {
+
+      logger.error('#main - marking seed as crawled - ' + err);
+      return callback(err);
+    }
+
+    logger.error('#main - Marked seed ' + seed._id + ' as crawled');
+    return callback(null);
+  });
+}
+
 exports = module.exports = {
   
   start:function(crawler, callback){
 
     pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
-    async.waterfall([retrieveSeeds, pPrepareQueries, retrieveAndSaveTweets], callback);
+    async.waterfall([retrieveSeeds, pPrepareQueries, crawlTwitter], callback);
   }
 };
