@@ -64,12 +64,17 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
     
-    logger.info('#main - queryig twitter');
+    logger.info('#twitter-helper - queryig twitter');
     
     phantom.create(function (ph) {
       
       ph.createPage(function (page) {
         
+        page.onConsoleMessage = function(msg) {
+          
+          logger.info('#twitter-helper - ' + msg);
+        };
+
         page.open(url, function (status) {
           
           if(status === 'success'){
@@ -81,7 +86,6 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
 
               function(innerCallback){
 
-                debugger;
                 page.evaluate(function() {
                  
                   //window.document.body.scrollTop = window.document.body.scrollTop + 10000;
