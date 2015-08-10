@@ -84,9 +84,10 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                 debugger;
                 page.evaluate(function() {
                  
-                  window.document.body.scrollTop = window.document.body.scrollTop + 10000;
-                  var endTag = $('.stream-end');
-                  return (endTag && endTag.css('display') !== 'none')?window.document.body.innerHTML:undefined;
+                  //window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+                  //var endTag = $('.stream-end');
+                  //return (endTag && endTag.css('display') !== 'none')?window.document.body.innerHTML:undefined;
+                  return undefined;
 
                 },function(result) {
 
