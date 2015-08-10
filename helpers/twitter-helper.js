@@ -17,6 +17,10 @@ var TwitterHelper = function(){
 
 TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
   
+  if(_.isUndefined(html)){
+    return undefined;
+  }
+
   var $ = cheerio.load(html);
 
   var $tweets = $("#stream-items-id .tweet");
@@ -105,7 +109,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
               function(err){
                 
                 ph.exit();
-                var tweets = self.parseTweetsFromHTML(html);
+                var tweets = self.parseTweetsFromHTML(html) || [];
                 logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
                 return callback(null, tweets);
               }
