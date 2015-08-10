@@ -96,7 +96,7 @@ var retrieveAndSaveTweets = function(twitterQueryCollection, callback){
 
         // Retrieve tweets and save them
         var twitterHelper = new TwitterHelper();
-        var pScrapeTweetsFromSearchResult = _.partial(twitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
+        var pScrapeTweetsFromSearchResult =  _.bind(twitterHelper.scrapeTweetsFromSearchResult, twitterHelper, twitterQuery);//_.partial(twitterHelper.scrapeTweetsFromSearchResult, twitterQuery);
         var pSaveTweets = _.partial(saveTweets, _, twitterQueryCollection.seedId);
         var steps = [pScrapeTweetsFromSearchResult, pSaveTweets];
         async.waterfall(steps, secondCallback);
