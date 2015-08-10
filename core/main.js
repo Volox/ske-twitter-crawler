@@ -151,6 +151,8 @@ var saveTweets = function(tweets, seedId, callback){
 
     Tweet.create(tweets, function(err, result) {
 
+      debugger;
+      
       // Manage duplicated key errors.
       if(err && err.code !== 11000) {
 
