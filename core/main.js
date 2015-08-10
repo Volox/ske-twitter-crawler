@@ -131,30 +131,37 @@ var saveTweets = function(tweets, seedId, callback){
 
   if(!_.isArray(tweets)) {
 
-    var error = new Error ("#index - retrieve tweets yield unexpected result");
+    var error = new Error ("#main - retrieve tweets yield unexpected result");
     logger.error("#main - " + error);
     return callback(error);
   }
-  
-  logger.info('#main - Saving ' + tweets.length + ' tweets for seed: ' + seedId);
+  else if(_.isEmpty(tweets)) {
 
-  _.each(tweets, function(tweet){
-    
-    tweet.seed = seedId;
-  });
-
-  Tweet.create(tweets, function(err, result) {
-
-    // Manage duplicated key errors.
-    if(err && err.code !== 11000) {
-
-      logger.error('#main - saving tweets ' + err);
-      return callback(err);
-    }
-
-    logger.info('#main - Saved ' + result.length + " tweets for seed: " + seedId);
+    logger.info("#main - Found no tweets for seed: " + seedId + " in current batch");
     return callback(null);
-  });
+  }
+  else {
+
+    logger.info('#main - Saving ' + tweets.length + ' tweets for seed: ' + seedId);
+
+    _.each(tweets, function(tweet){
+      
+      tweet.seed = seedId;
+    });
+
+    Tweet.create(tweets, function(err, result) {
+
+      // Manage duplicated key errors.
+      if(err && err.code !== 11000) {
+
+        logger.error('#main - saving tweets ' + err);
+        return callback(err);
+      }
+
+      logger.info('#main - Saved ' + result.length + " tweets for seed: " + seedId);
+      return callback(null);
+    });
+  }
 };
 
 // 4. 
