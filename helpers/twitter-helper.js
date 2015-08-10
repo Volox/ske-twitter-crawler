@@ -6,10 +6,6 @@ var _       = require("underscore");
 var querystring = require("querystring");
 var logger  = require('../core/logger');
 
-// A utility function that parses the obtained HTML, and
-// retrives all the useful information out of the found tweets
-// @html - the html-subtree that contains the tweets to parse
-
 var TwitterHelper = function(){
 
   this.retryOnceFlag = true;
@@ -107,7 +103,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                 setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
               }, 
               function(err){
-                
+                debugger;
                 ph.exit();
                 var tweets = self.parseTweetsFromHTML(html) || [];
                 logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
@@ -118,7 +114,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
           else { 
             
             if(self.retryOnceFlag){
-
+              
               ph.exit();
               self.retryOnceFlag = false;
               logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
