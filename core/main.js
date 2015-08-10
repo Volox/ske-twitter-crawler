@@ -151,16 +151,18 @@ var saveTweets = function(tweets, seedId, callback){
 
     Tweet.create(tweets, function(err, result) {
 
-      debugger;
-      
       // Manage duplicated key errors.
       if(err && err.code !== 11000) {
 
         logger.error('#main - saving tweets ' + err);
         return callback(err);
       }
+      
+      if(!_.isUndefined(result) && _.isArray(result)) {
 
-      logger.info('#main - Saved ' + result.length + " tweets for seed: " + seedId);
+        logger.info('#main - Saved ' + result.length + " tweets for seed: " + seedId);
+      }
+
       return callback(null);
     });
   }

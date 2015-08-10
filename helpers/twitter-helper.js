@@ -103,7 +103,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                 setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
               }, 
               function(err){
-                debugger;
+                
                 ph.exit();
                 var tweets = self.parseTweetsFromHTML(html) || [];
                 logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
@@ -114,7 +114,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
           else { 
             
             if(self.retryOnceFlag){
-              
+
               ph.exit();
               self.retryOnceFlag = false;
               logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
