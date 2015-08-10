@@ -107,7 +107,11 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                 setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
               }, 
               function(err){
-                debugger;
+                
+                if(_.isUndefined(html)){
+                  debugger;
+                }
+
                 ph.exit();
                 var tweets = self.parseTweetsFromHTML(html) || [];
                 logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
