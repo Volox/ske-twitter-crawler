@@ -72,8 +72,6 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         
         page.open(url, function (status) {
           
-          debugger;
-
           if(status === 'success'){
             
             self.retryOnceFlag = true;
