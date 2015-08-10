@@ -58,7 +58,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 };
 
 // 3.
-var crawlTwitter = function(twitterQueryCollections, seeds, callback) {
+var crawlTwitterWithQueryCollections = function(twitterQueryCollections, seeds, callback) {
   
   logger.info("#main - retrieving and  saving tweets");
 
@@ -71,15 +71,14 @@ var crawlTwitter = function(twitterQueryCollections, seeds, callback) {
     });
 
     // Retrieve and save tweets. Then mark the seed as crawled
-    var pRetrieveAndSaveTweets = _.partial(retrieveAndSaveTweets, twitterQueryCollection);
+    var pCrawlTwitterWithQueryCollection = _.partial(crawlTwitterWithQueryCollection, twitterQueryCollection);
     var pMarkSeedAsCrawled = _.partial(markSeedAsCrawled, seed);
-    async.series([pRetrieveAndSaveTweets, pMarkSeedAsCrawled], firstCallback);
+    async.series([pCrawlTwitterWithQueryCollection, pMarkSeedAsCrawled], firstCallback);
     
   }, callback);
 }
 
-// 3.1
-var retrieveAndSaveTweets = function(twitterQueryCollection, callback){
+var crawlTwitterWithQueryCollection = function(twitterQueryCollection, callback){
   
   logger.info("#main - Retrieving tweets for seed: " + twitterQueryCollection.seedId);
 
@@ -91,40 +90,43 @@ var retrieveAndSaveTweets = function(twitterQueryCollection, callback){
       
       logger.info("#main - Executing batch :" + (key+1) + "/" + batchedTwitterQueries.length);
 
-      // Empty array to store the tweets found in the batch
-      var batchTweets = [];
-
-      // Execute the group of 10-queries in parallel
-      async.each(twitterQueriesBatch, function(twitterQuery, secondCallback){
-
-        var twitterHelper = new TwitterHelper(); 
-        twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
-          
-          if(err){
-            return secondCallback(err);
-          }
-
-          batchTweets = batchTweets.concat(tweets);
-          return secondCallback(null);
-        });
-      
-      }, function(err){
-        if(err){
-          return firstCallback(err);
-        }
-        
-        if(!_.isEmpty(batchTweets)){
-
-          return saveTweets(tweets, twitterQueryCollection.seedId, firstCallback );
-        }
-
-        return firstCallback(null);
-      });   
+      var pCrawlTwitterWithQueryBatch = _.partial(crawlTwitterWithQueryBatch, twitterQueriesBatch);
+      var pSaveTweets = _.partial(saveTweets, _, twitterQueryCollection.seedId);
+      var steps = [pCrawlTwitterWithQueryBatch, pSaveTweets];
+      async.waterfall(steps, firstCallback);
 
   }, callback);
 };
 
-// 3.2
+var crawlTwitterWithQueryBatch = function(twitterQueriesBatch, callback){
+
+  // Execute the group of 10-queries in parallel
+  var crawledTweets = [];
+
+  async.each(twitterQueriesBatch, function(twitterQuery, firstCallback){
+
+    // Retrieve tweets and save them
+    var twitterHelper = new TwitterHelper();
+    twitterHelper.scrapeTweetsFromSearchResult(twitterQuery, function(err, tweets){
+      
+      if(err){
+        return firstCallback(err);
+      }
+      
+      crawledTweets = crawledTweets.concat(tweets);
+      return firstCallback(null);
+    });
+  }, function(err){
+    
+    if(err) {
+
+      return callback(err);
+    }
+
+    return callback(null, crawledTweets);
+  });   
+};
+
 var saveTweets = function(tweets, seedId, callback){
 
   if(!_.isArray(tweets)) {
@@ -193,6 +195,6 @@ exports = module.exports = {
   start:function(crawler, callback){
 
     pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
-    async.waterfall([retrieveSeeds, pPrepareQueries, crawlTwitter], callback);
+    async.waterfall([retrieveSeeds, pPrepareQueries, crawlTwitterWithQueryCollections], callback);
   }
 };
