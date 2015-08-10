@@ -151,19 +151,28 @@ var saveTweets = function(tweets, seedId, callback){
 
     Tweet.create(tweets, function(err, result) {
 
-      // Manage duplicated key errors.
-      if(err && err.code !== 11000) {
+      if(err) {
+        
+        // Manage duplicated key errors.  
+        if(err.code === 11000){
 
-        logger.error('#main - saving tweets ' + err);
-        return callback(err);
+          return callback(null);
+        }
+        else {
+          
+          logger.error('#main - saving tweets ' + err);
+          return callback(err);
+        }
       }
-      
-      if(!_.isUndefined(result) && _.isArray(result)) {
+      else {
 
-        logger.info('#main - Saved ' + result.length + " tweets for seed: " + seedId);
+        if(!_.isUndefined(result) && _.isArray(result)) {
+
+          logger.info('#main - Saved ' + result.length + " tweets for seed: " + seedId);
+        }
+
+        return callback(null);
       }
-
-      return callback(null);
     });
   }
 };
