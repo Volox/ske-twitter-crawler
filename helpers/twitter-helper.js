@@ -66,8 +66,7 @@ TwitterHelper.prototype.findAvailablePort = function(callback){
   	max:60000,
   	retrieve:1
    }; 
-   
-   port.find(options, callback);
+   return port.find(options, callback);
 };
 
 TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback) {
@@ -75,7 +74,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var self = this;
     
     self.findAvailablePort(function(err, p){
-      
+      debugger;
       if(err) {
 
         logger.error('#twitter-helper - Could not find an available port - ' +  err);
