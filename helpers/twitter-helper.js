@@ -75,7 +75,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         var url = 'https://twitter.com/search?';
         url = url + querystring.stringify(query);
         
-        logger.info('#twitter-helper - queryig twitter through port:' + port);
+        logger.info('#twitter-helper - Querying twitter with phatom. Attempting IPC through port:' + port);
         
         // create a new phantom process using a new available port
         phantom.create('', { 
