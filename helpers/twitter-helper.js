@@ -62,9 +62,9 @@ TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
 TwitterHelper.prototype.findAvailablePort = function(callback){
    
    var options = {
-	min:10000,
-	max:60000,
-	retrieve:1
+  	min:10000,
+  	max:60000,
+  	retrieve:1
    }; 
    
    port.find(options, callback);
@@ -75,97 +75,104 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
     var self = this;
     
     self.findAvailablePort(function(err, port){
-    if(err){
-      logger.error('#twitter-helper - Could not find an available port - ' +  err);
-      return callback(err);
-    }
-    else{
-    var url = 'https://twitter.com/search?';
-    url = url + querystring.stringify(query);
-    
-    logger.info('#twitter-helper - queryig twitter');
-    
-    // create a new phantom process using a new available port
-    phantom.create('', {port:port, onExit:function(errorCode){
-	// manage child-process crashes
-	if(errorCode > 0){ 
-             // manage first error by re-attempting
-             if(self.retryOnceFlag){
-		self.retryOnceFlag = false;
-		logger.info('#twitter-helper - phantom process has crashed. Trying once again ');
-		return self.scrapeTweetsFromSearchResult(query, callback);  
-	     }
-	     // manage second error by skipping the query
-             else {
-                logger.error('#twitter-helper - phantom process crashed twice with the same query, Skiping query');
-                return callback(null, []);
-	     }
-	}
-     }},function (ph) {
       
-      ph.createPage(function (page) {
+      if(err) {
+
+        logger.error('#twitter-helper - Could not find an available port - ' +  err);
+        return callback(err);
+      }
+      else {
         
-        page.onConsoleMessage = function(msg) {
+        var url = 'https://twitter.com/search?';
+        url = url + querystring.stringify(query);
+        
+        logger.info('#twitter-helper - queryig twitter');
+        
+        // create a new phantom process using a new available port
+        phantom.create('', { 
+          port:port, 
+          onExit:function(errorCode){
+          	// manage child-process crashes
+          	if(errorCode > 0){ 
+                       // manage first error by re-attempting
+                       if(self.retryOnceFlag){
+          		self.retryOnceFlag = false;
+          		logger.info('#twitter-helper - phantom process has crashed. Trying once again ');
+          		return self.scrapeTweetsFromSearchResult(query, callback);  
+          	     }
+          	     // manage second error by skipping the query
+                       else {
+                          logger.error('#twitter-helper - phantom process crashed twice with the same query, Skiping query');
+                          return callback(null, []);
+          	     }
+          	}
+         }
+        },function (ph) {
           
-          logger.info('#twitter-helper - ' + msg);
-        };
-
-        page.open(url, function (status) {
-          
-          if(status === 'success'){
+          ph.createPage(function (page) {
             
-            self.retryOnceFlag = true;
-            var html = undefined;
+            page.onConsoleMessage = function(msg) {
+              
+              logger.info('#twitter-helper - ' + msg);
+            };
 
-            async.during( 
-
-              function(innerCallback){
-
-                page.evaluate(function() {
-                 
-                  window.document.body.scrollTop = window.document.body.scrollTop + 10000;
-                  var endTag = $('.stream-end');
-                  return (endTag && endTag.css('display') !== 'none')? document.body.innerHTML:undefined;
-
-                },function(result) {
-
-                  html = result;
-                  return innerCallback(null, _.isUndefined(html));
-                });
-              }, 
-              function(innerCallback) {
-                logger.info('#twitter-helper - scrolling down');
-                setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
-              }, 
-              function(err){
+            page.open(url, function (status) {
+              
+              if(status === 'success'){
                 
-                ph.exit();
-                var tweets = self.parseTweetsFromHTML(html) || [];
-                logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
-                return callback(null, tweets);
+                self.retryOnceFlag = true;
+                var html = undefined;
+
+                async.during( 
+
+                  function(innerCallback){
+
+                    page.evaluate(function() {
+                     
+                      window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+                      var endTag = $('.stream-end');
+                      return (endTag && endTag.css('display') !== 'none')? document.body.innerHTML:undefined;
+
+                    },function(result) {
+
+                      html = result;
+                      return innerCallback(null, _.isUndefined(html));
+                    });
+                  }, 
+                  function(innerCallback) {
+                    logger.info('#twitter-helper - scrolling down');
+                    setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
+                  }, 
+                  function(err){
+                    
+                    ph.exit();
+                    var tweets = self.parseTweetsFromHTML(html) || [];
+                    logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+                    return callback(null, tweets);
+                  }
+                );
               }
-            );
-          }
-          else { 
-            
-            if(self.retryOnceFlag){
+              else { 
+                
+                if(self.retryOnceFlag){
 
-              ph.exit();
-              self.retryOnceFlag = false;
-              logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
-              return self.scrapeTweetsFromSearchResult(query, callback);  
-            } 
-            else {
+                  ph.exit();
+                  self.retryOnceFlag = false;
+                  logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
+                  return self.scrapeTweetsFromSearchResult(query, callback);  
+                } 
+                else {
 
-                ph.exit();
-                logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
-                return callback(null, []);
-            }
-          }
+                    ph.exit();
+                    logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
+                    return callback(null, []);
+                }
+              }
 
+            });
+          });
         });
-      });
-    });
+      }
     }
 };
 
