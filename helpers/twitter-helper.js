@@ -68,7 +68,7 @@ TwitterHelper.prototype.findAvailablePort = function(callback){
    }; 
    
    port.find(options, callback);
-}
+};
 
 TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback) {
    
@@ -82,7 +82,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         return callback(err);
       }
       else {
-        
+
         var url = 'https://twitter.com/search?';
         url = url + querystring.stringify(query);
         
@@ -92,19 +92,22 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         phantom.create('', { 
           port:port, 
           onExit:function(errorCode){
-          	// manage child-process crashes
+          	
+            // manage child-process crashes
           	if(errorCode > 0){ 
-                       // manage first error by re-attempting
-                       if(self.retryOnceFlag){
-          		self.retryOnceFlag = false;
-          		logger.info('#twitter-helper - phantom process has crashed. Trying once again ');
-          		return self.scrapeTweetsFromSearchResult(query, callback);  
-          	     }
+                
+                // manage first error by re-attempting
+                if(self.retryOnceFlag){
+              		
+                  self.retryOnceFlag = false;
+              		logger.info('#twitter-helper - phantom process has crashed. Trying once again ');
+              		return self.scrapeTweetsFromSearchResult(query, callback);  
+          	    }
           	     // manage second error by skipping the query
-                       else {
-                          logger.error('#twitter-helper - phantom process crashed twice with the same query, Skiping query');
-                          return callback(null, []);
-          	     }
+                else {
+                  logger.error('#twitter-helper - phantom process crashed twice with the same query, Skiping query');
+                  return callback(null, []);
+          	    }
           	}
          }
         },function (ph) {
@@ -173,7 +176,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
           });
         });
       }
-    }
+    });
 };
 
 exports = module.exports = TwitterHelper;
