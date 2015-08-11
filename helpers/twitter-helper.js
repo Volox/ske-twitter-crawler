@@ -4,8 +4,8 @@ var cheerio = require('cheerio');
 var async = require('async');
 var _       = require("underscore");
 var querystring = require("querystring");
-var logger  = require('../core/logger');
 var port = require('portastic');
+var logger  = require('../core/logger');
 
 var TwitterHelper = function(){
 
@@ -74,7 +74,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
    
     var self = this;
     
-    self.findAvailablePort(function(err, port){
+    self.findAvailablePort(function(err, p){
       
       if(err) {
 
@@ -86,11 +86,11 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         var url = 'https://twitter.com/search?';
         url = url + querystring.stringify(query);
         
-        logger.info('#twitter-helper - queryig twitter');
+        logger.info('#twitter-helper - queryig twitter through port:' + p);
         
         // create a new phantom process using a new available port
         phantom.create('', { 
-          port:port, 
+          port:p, 
           onExit:function(errorCode){
           	
             // manage child-process crashes
