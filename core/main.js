@@ -16,8 +16,8 @@ var retrieveSeeds = function(callback) {
   
   logger.info("#main - retrieveing seeds");
 
-  // Retrieve the seeds that have not been crawled
-  Seed.find({crawled:false}, function(err, seeds){
+  // Retrieve the seeds that have not been crawled and that have twitter-handles
+  Seed.find({twitter:{$not:{$size:0}}, crawled:false}, function(err, seeds){
     
     if(err) {
 
