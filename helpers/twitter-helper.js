@@ -5,6 +5,7 @@ var async = require('async');
 var _       = require("underscore");
 var querystring = require("querystring");
 var logger  = require('../core/logger');
+var port = require('portastic');
 
 var TwitterHelper = function(){
 
@@ -58,15 +59,49 @@ TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
   return tweets;
 };
 
+TwitterHelper.prototype.findAvailablePort = function(callback){
+   
+   var options = {
+	min:10000,
+	max:60000,
+	retrieve:1
+   }; 
+   
+   port.find(options, callback);
+}
+
 TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback) {
-    
+   
     var self = this;
+    
+    self.findAvailablePort(function(err, port){
+    if(err){
+      logger.error('#twitter-helper - Could not find an available port - ' +  err);
+      return callback(err);
+    }
+    else{
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
     
     logger.info('#twitter-helper - queryig twitter');
     
-    phantom.create(function (ph) {
+    // create a new phantom process using a new available port
+    phantom.create('', {port:port, onExit:function(errorCode){
+	// manage child-process crashes
+	if(errorCode > 0){ 
+             // manage first error by re-attempting
+             if(self.retryOnceFlag){
+		self.retryOnceFlag = false;
+		logger.info('#twitter-helper - phantom process has crashed. Trying once again ');
+		return self.scrapeTweetsFromSearchResult(query, callback);  
+	     }
+	     // manage second error by skipping the query
+             else {
+                logger.error('#twitter-helper - phantom process crashed twice with the same query, Skiping query');
+                return callback(null, []);
+	     }
+	}
+     }},function (ph) {
       
       ph.createPage(function (page) {
         
@@ -131,6 +166,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         });
       });
     });
+    }
 };
 
 exports = module.exports = TwitterHelper;

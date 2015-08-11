@@ -83,7 +83,7 @@ var crawlTwitterWithQueryCollection = function(twitterQueryCollection, callback)
   logger.info("#main - Retrieving tweets for seed: " + twitterQueryCollection.seedId);
 
   // Create groups of 10 queries
-  var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
+  var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 20);
   
   // Execute each group in series
   async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, firstCallback){
