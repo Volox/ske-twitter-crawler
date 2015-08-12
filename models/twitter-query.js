@@ -77,7 +77,7 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, since, until, cal
 			return callback(err);
 		}
 		else {
-
+			debugger;
 			return callback(null, queries);
 		}
 	});	
@@ -107,7 +107,7 @@ TwitterQuery.checkLastQueriedDateForSeed = function(seed, since, callback){
 		  }
 		  // The query found at least one tweet. Use the discovered 'timestamp' as 'since' date
 		  else {
-		  	debugger;
+		  	
 		  	var lastDayQueried = moment.unix(_.first(result).timestamp).format('YYYY-MM-DD');
 		  	return callback(null, seed, lastDayQueried);	
 		  }
