@@ -141,12 +141,15 @@ var crawlTwitterWithQueryBatch = function(ph, twitterQueriesBatch, callback){
       return firstCallback(null);
     });
   }, function(err){
+      
+    twitterHelper = undefined;
     
     if(err) {
 
       return callback(err);
     }
 
+    
     return callback(null, ph, crawledTweets);
   });   
 };
