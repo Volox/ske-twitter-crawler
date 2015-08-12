@@ -59,7 +59,7 @@ module.exports = {
 						return callback(null, ph)
 					});
 				}
-			}
+			});
 		}
 	},
 
