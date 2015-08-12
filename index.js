@@ -17,10 +17,11 @@ var mongo = {
 var crawler = {
   'startDate': process.env.SKE_CRAWLER_START_DATE || '2006-03-21', // start crawling from the foundation date of twitter
   'endDate': process.env.SKE_CRAWLER_END_DATE || moment().format('YYYY-MM-DD'), // crawl until today
-  'regex': new RegExp(process.env.SKE_CRAWLER_REGEX || '.*') // Crawl for all the seeds in the db
+  'regex': new RegExp(process.env.SKE_CRAWLER_REGEX || '.*'), // Crawl for all the seeds in the db
+  'parallelQueries': process.env.SKE_CRAWLER_PARALLEL_QUERIES || 1
 };
 
-var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName, crawler.startDate, crawler.endDate];
+var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName, crawler.startDate, crawler.endDate, crawler.regex, crawler.parallelQueries];
 
 // Check if environment variables have been set
 if(StringUtilities.checkStringsNotEmpty(requiredVariables)){

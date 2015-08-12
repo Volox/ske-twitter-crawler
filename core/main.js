@@ -58,7 +58,7 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 };
 
 // 3.
-var crawlTwitterWithQueryCollections = function(twitterQueryCollections, seeds, callback) {
+var crawlTwitterWithQueryCollections = function(twitterQueryCollections, seeds, crawlerParallelQueries, callback) {
   
   logger.info("#main - retrieving and  saving tweets");
 
@@ -71,19 +71,19 @@ var crawlTwitterWithQueryCollections = function(twitterQueryCollections, seeds, 
     });
 
     // Retrieve and save tweets. Then mark the seed as crawled
-    var pCrawlTwitterWithQueryCollection = _.partial(crawlTwitterWithQueryCollection, twitterQueryCollection);
+    var pCrawlTwitterWithQueryCollection = _.partial(crawlTwitterWithQueryCollection, twitterQueryCollection, crawlerParallelQueries);
     var pMarkSeedAsCrawled = _.partial(markSeedAsCrawled, seed);
     async.series([pCrawlTwitterWithQueryCollection, pMarkSeedAsCrawled], firstCallback);
     
   }, callback);
 }
 
-var crawlTwitterWithQueryCollection = function(twitterQueryCollection, callback){
+var crawlTwitterWithQueryCollection = function(twitterQueryCollection, crawlerParallelQueries, callback){
   
   logger.info("#main - Retrieving tweets for seed: " + twitterQueryCollection.seedId);
 
-  // Create groups of 10 queries
-  var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, 10);
+  // Create groups of crawlerParallelQueries number of queries
+  var batchedTwitterQueries = ArrayUtilities.partitionArray(twitterQueryCollection.queries, crawlerParallelQueries);
   
   // Execute each group in series
   async.forEachOfSeries(batchedTwitterQueries, function(twitterQueriesBatch, key, firstCallback){
@@ -100,10 +100,9 @@ var crawlTwitterWithQueryCollection = function(twitterQueryCollection, callback)
 
 var crawlTwitterWithQueryBatch = function(twitterQueriesBatch, callback){
 
-  // Execute the group of 10-queries in parallel
   var crawledTweets = [];
 
-  async.eachSeries(twitterQueriesBatch, function(twitterQuery, firstCallback){
+  async.each(twitterQueriesBatch, function(twitterQuery, firstCallback){
 
     // Retrieve tweets and save them
     var twitterHelper = new TwitterHelper();
@@ -209,6 +208,7 @@ exports = module.exports = {
     
     pRetrieveSeeds = _.partial(retrieveSeeds, crawler.regex);
     pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
-    async.waterfall([pRetrieveSeeds, pPrepareQueries, crawlTwitterWithQueryCollections], callback);
+    pCrawlTwitterWithQueryCollections(crawlTwitterWithQueryCollections, _, _, crawler.parallelQueries);
+    async.waterfall([pRetrieveSeeds, pPrepareQueries, pCrawlTwitterWithQueryCollections], callback);
   }
 };
