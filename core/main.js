@@ -143,7 +143,7 @@ var crawlTwitterWithQueryBatch = function(ph, twitterQueriesBatch, callback){
   }, function(err){
       
     twitterHelper = undefined;
-    
+
     if(err) {
 
       return callback(err);
@@ -206,7 +206,6 @@ var saveTweets = function(ph, tweets, seedId, callback){
       }
     });
   }
-
 };
 
 // 4. 
@@ -224,6 +223,9 @@ var markSeedAsCrawled = function(seed, callback){
   seed.crawled = true;
   seed.save(function(err){
     
+    // purge seed memory
+    seed = undefined;
+
     if(err) {
 
       logger.error('#main - marking seed as crawled - ' + err);
