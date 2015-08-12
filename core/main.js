@@ -202,7 +202,7 @@ var saveTweets = function(ph, tweets, seedId, callback){
       }
     });
   }
-  
+
 };
 
 // 4. 
@@ -239,6 +239,6 @@ exports = module.exports = {
     var pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
     var pCrawlTwitterWithQueryCollections = _.partial(crawlTwitterWithQueryCollections, _, _, crawler.parallelQueries);
   
-    async.waterfall([pRetrieveSeeds, pPrepareQueries, pObtainPhantomInstance, pCrawlTwitterWithQueryCollections], callback);
+    async.waterfall([pRetrieveSeeds, pPrepareQueries, pCrawlTwitterWithQueryCollections], callback);
   }
 };
