@@ -67,23 +67,8 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
   });
 };
 
-// 3. 
-var pObtainPhantomInstance = function(twitterQueryCollections, seeds, callback){
-
-  PhantomHelper.getPhantomInstace(function(err, ph){
-    if(err){
-
-      logger.error("#main - Could not create phantom instance");
-      return callback(err);
-    }
-    else{
-      return callback(null, ph, twitterQueryCollections, seeds);
-    }
-  });
-}
-
-// 4.
-var crawlTwitterWithQueryCollections = function(ph, twitterQueryCollections, seeds, crawlerParallelQueries, callback) {
+// 3.
+var crawlTwitterWithQueryCollections = function(twitterQueryCollections, seeds, crawlerParallelQueries, callback) {
   
   logger.info("#main - retrieving and  saving tweets");
 
@@ -96,14 +81,14 @@ var crawlTwitterWithQueryCollections = function(ph, twitterQueryCollections, see
     });
 
     // Retrieve and save tweets. Then mark the seed as crawled
-    var pCrawlTwitterWithQueryCollection = _.partial(crawlTwitterWithQueryCollection, ph, twitterQueryCollection, crawlerParallelQueries);
+    var pCrawlTwitterWithQueryCollection = _.partial(crawlTwitterWithQueryCollection, twitterQueryCollection, crawlerParallelQueries);
     var pMarkSeedAsCrawled = _.partial(markSeedAsCrawled, seed);
     async.series([pCrawlTwitterWithQueryCollection, pMarkSeedAsCrawled], firstCallback);
     
   }, callback);
 }
 
-var crawlTwitterWithQueryCollection = function(ph, twitterQueryCollection, crawlerParallelQueries, callback){
+var crawlTwitterWithQueryCollection = function(twitterQueryCollection, crawlerParallelQueries, callback){
   
   logger.info("#main - Retrieving tweets for seed: " + twitterQueryCollection.seedId);
 
@@ -115,13 +100,28 @@ var crawlTwitterWithQueryCollection = function(ph, twitterQueryCollection, crawl
       
       logger.info("#main - Executing batch :" + (key+1) + "/" + batchedTwitterQueries.length);
 
-      var pCrawlTwitterWithQueryBatch = _.partial(crawlTwitterWithQueryBatch, ph, twitterQueriesBatch);
-      var pSaveTweets = _.partial(saveTweets, _, twitterQueryCollection.seedId);
-      var steps = [pCrawlTwitterWithQueryBatch, pSaveTweets];
+      var pCrawlTwitterWithQueryBatch = _.partial(crawlTwitterWithQueryBatch, _, twitterQueriesBatch);
+      var pSaveTweets = _.partial(saveTweets, _, _, twitterQueryCollection.seedId);
+      var steps = [obtainPhantomInstance, pCrawlTwitterWithQueryBatch, pSaveTweets];
       async.waterfall(steps, firstCallback);
 
   }, callback);
 };
+
+var obtainPhantomInstance = function(callback){
+
+  PhantomHelper.getPhantomInstace(function(err, ph){
+    
+    if(err){
+
+      logger.error("#main - Could not create phantom instance");
+      return callback(err);
+    }
+    else{
+      return callback(null, ph);
+    }
+  });
+}
 
 var crawlTwitterWithQueryBatch = function(ph, twitterQueriesBatch, callback){
 
@@ -147,11 +147,14 @@ var crawlTwitterWithQueryBatch = function(ph, twitterQueriesBatch, callback){
       return callback(err);
     }
 
-    return callback(null, crawledTweets);
+    return callback(null, ph, crawledTweets);
   });   
 };
 
-var saveTweets = function(tweets, seedId, callback){
+var saveTweets = function(ph, tweets, seedId, callback){
+
+  // purge the phantom process
+  ph.exit();
 
   if(!_.isArray(tweets)) {
 
@@ -199,6 +202,7 @@ var saveTweets = function(tweets, seedId, callback){
       }
     });
   }
+  
 };
 
 // 4. 
@@ -233,7 +237,7 @@ exports = module.exports = {
     
     var pRetrieveSeeds = _.partial(retrieveSeeds, crawler.regex);
     var pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
-    var pCrawlTwitterWithQueryCollections = _.partial(crawlTwitterWithQueryCollections, _, _, _, crawler.parallelQueries);
+    var pCrawlTwitterWithQueryCollections = _.partial(crawlTwitterWithQueryCollections, _, _, crawler.parallelQueries);
   
     async.waterfall([pRetrieveSeeds, pPrepareQueries, pObtainPhantomInstance, pCrawlTwitterWithQueryCollections], callback);
   }

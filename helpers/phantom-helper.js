@@ -25,8 +25,9 @@ module.exports = {
 		var self = this;
 
 		if(!_.isUndefined(self.ph)){
-
-			return callback(null, self.ph);
+			
+			self.ph.exit();
+			self.ph = undefined;
 		}
 		else {
 
