@@ -98,9 +98,10 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
 		logger.info('#twitter-helper - Phantom exit with code '+errorCode);
                 // manage child-process crashes
 		if(_.isUndefined(errorCode) || errorCode !== 0){              		
-                  logger.error('#twitter-helper - phantom process crashed twice with the same query, Skiping query');
-                  return callback(null, []);
-          	}
+                  logger.error('#twitter-helper - phantom process crashed - ' + errorCode);
+                  //return callback(null, []);
+          	  process.exit(1);
+                }
          }
         },function (ph) {
           

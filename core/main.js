@@ -103,7 +103,7 @@ var crawlTwitterWithQueryBatch = function(twitterQueriesBatch, callback){
   // Execute the group of 10-queries in parallel
   var crawledTweets = [];
 
-  async.each(twitterQueriesBatch, function(twitterQuery, firstCallback){
+  async.eachSeries(twitterQueriesBatch, function(twitterQuery, firstCallback){
 
     // Retrieve tweets and save them
     var twitterHelper = new TwitterHelper();

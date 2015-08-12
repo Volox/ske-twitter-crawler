@@ -37,15 +37,16 @@ if(StringUtilities.checkStringsNotEmpty(requiredVariables)){
     
     console.time('crawl-twitter');
     main.start(crawler, function(err, result){
-
+	
+      db.close();
+      console.timeEnd('crawl-twitter');
+      
       if(err) {
         
-        console.timeEnd('crawl-twitter');
-        logger.info("#index " + err);
-        return process.exit();
+        logger.info("#index - Finshed with Error" + err);
+        return process.exit(1);
       } 
       
-      console.timeEnd('crawl-twitter');
       logger.info("#index - Finished succesfully")
       return process.exit();
     });
