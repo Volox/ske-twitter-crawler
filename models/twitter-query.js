@@ -78,7 +78,7 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, since, until, cal
 			return callback(err);
 		}
 		else {
-			debugger;
+	
 			return callback(null, queries);
 		}
 	});	
