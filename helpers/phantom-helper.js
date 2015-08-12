@@ -17,58 +17,41 @@ phantom.stderrHandler = function (error) {
 };
 
 module.exports = {
-	
-	ph:undefined,
-
+	// Builds phantom instances on demand
 	getPhantomInstace: function(callback) {
 
 		var self = this;
 
-		if(!_.isUndefined(self.ph)){
-			
-			self.ph.exit();
-			self.ph = undefined;
-		}
-		else {
+		freeport(function(err, port){
 
-			freeport(function(err, port){
+			if(err) {
 
-				if(err) {
+				logger.error('#phantom-helper - Could not find an available port - ' +  err);
+				return callback(err);
+			}
+			else {
 
-					logger.error('#phantom-helper - Could not find an available port - ' +  err);
-					return callback(err);
-				}
-				else {
+				// create a new phantom process using a new available port
+				phantom.create('--load-images=no', { 
 
-					// create a new phantom process using a new available port
-					phantom.create('--load-images=no', { 
-
-						port:port, 
-						onExit:function(errorCode){
-							
-							logger.info('#phantom-helper - Phantom exit with code '+errorCode);
-							 
-							if(_.isUndefined(errorCode) || errorCode !== 0){              		
-							    
-							    logger.error('#phantom-helper - phantom process crashed - ' + errorCode);
-								process.exit(1);
-							}
+					port:port, 
+					onExit:function(errorCode){
+						
+						logger.info('#phantom-helper - Phantom exit with code '+errorCode);
+						 
+						if(_.isUndefined(errorCode) || errorCode !== 0){              		
+						    
+						    logger.error('#phantom-helper - phantom process crashed - ' + errorCode);
+							process.exit(1);
 						}
-					}, function(ph){
+					}
+				}, function(ph){
 
-						self.ph = ph;
-						return callback(null, ph)
-					});
-				}
-			});
-		}
+					self.ph = ph;
+					return callback(null, ph)
+				});
+			}
+		});
 	},
 
-	phantomExit:function(){
-		
-		if(!_.isUndefined(this.ph)){
-
-			ph.exit();
-		}
-	}
 };
