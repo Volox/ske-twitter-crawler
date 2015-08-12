@@ -7,18 +7,6 @@ var _       = require("underscore");
 var querystring = require("querystring");
 var freeport = require('freeport');
 var logger  = require('../core/logger');
-var PhantomHelper = require('../helpers/phantom-helper');
-
-phantom.stderrHandler = function (error) {
-    
-   if (error.match(/(No such method.*socketSentData)|(CoreText performance note)/)) {
-        return;
-    }
-   logger.error('#twitter-helper - Phantom has crashed - ' +  error);
-   logger.error('#twitter-helper - Exiting with error code = 0');
-   mongoose.connection.close();
-   process.exit(1);
-};
 
 var TwitterHelper = function(){
 
