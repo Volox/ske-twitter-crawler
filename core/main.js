@@ -233,7 +233,7 @@ exports = module.exports = {
     
     var pRetrieveSeeds = _.partial(retrieveSeeds, crawler.regex);
     var pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
-    var pCrawlTwitterWithQueryCollections = _.partial(crawlTwitterWithQueryCollections, _, _, crawler.parallelQueries);
+    var pCrawlTwitterWithQueryCollections = _.partial(crawlTwitterWithQueryCollections, _, _, _, crawler.parallelQueries);
   
     async.waterfall([pRetrieveSeeds, pPrepareQueries, pObtainPhantomInstance, pCrawlTwitterWithQueryCollections], callback);
   }
