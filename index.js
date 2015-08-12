@@ -7,6 +7,8 @@ var logger   = require("./core/logger");
 var main     = require("./core/main");
 var StringUtilities = require("./utilities/string-utilities")
 
+process.exit(1);
+
 // Retrive environment variables
 var mongo = {
   

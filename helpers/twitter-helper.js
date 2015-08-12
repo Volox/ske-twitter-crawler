@@ -14,6 +14,7 @@ phantom.stderrHandler = function (error) {
         return;
     }
    logger.error('#twitter-helper - Phantom has crashed - ' +  error);
+   logger.errir('#twitter-helper - Exiting with error code = 0');
    mongoose.connection.close();
    process.exit(1);
 
