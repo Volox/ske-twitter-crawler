@@ -17,6 +17,7 @@ phantom.stderrHandler = function (error) {
 };
 
 module.exports = {
+
 	// Builds phantom instances on demand
 	getPhantomInstace: function(callback) {
 

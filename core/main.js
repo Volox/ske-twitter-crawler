@@ -157,7 +157,7 @@ var saveTweets = function(ph, tweets, seedId, callback){
 
   // purge the phantom process
   ph.exit();
-  ph = undefined;
+  ph = null;
 
   if(!_.isArray(tweets)) {
 
@@ -181,7 +181,7 @@ var saveTweets = function(ph, tweets, seedId, callback){
 
     Tweet.create(tweets, function(err, result) {
 
-      tweets = undefined;
+      tweets = null;
 
       if(err) {
         
@@ -234,7 +234,7 @@ var markSeedAsCrawled = function(seed, callback){
     logger.info('#main - Marked seed ' + seed._id + ' as crawled');
 
     // purge seed memory
-    seed = undefined;
+    seed = null;
 
 
     return callback(null);

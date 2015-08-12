@@ -47,6 +47,11 @@ exports = module.exports = {
         geo = $geo.attr('data-original-title') || $geo.attr('title') || $geo.find('.u-hiddenVisually').text();
       }
 
+      $geo = null;
+      $timestamp = null;
+      $account = null;
+      $tweet = null;
+
       return {
         tweetId: id,
         text: text,
@@ -99,12 +104,12 @@ exports = module.exports = {
             }, 
             function(err){
               
-              //page.close(); 
-              page.release();
-              page = undefined;
-              //ph.exit();
               var tweets = self.parseTweetsFromHTML(html) || [];
               logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+              
+              page.release();
+              page = null;
+              html = null;
               return callback(null, tweets);
             }
           );
@@ -115,7 +120,7 @@ exports = module.exports = {
             
             //page.close();
             page.release();
-            page = undefined;
+            page = null;
             //ph.exit();
             self.retryOnceFlag = false;
             logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
@@ -124,7 +129,7 @@ exports = module.exports = {
           else {
             //page.close();
             page.release();
-            page = undefined;
+            page = null;
             //ph.exit();
             logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
             return callback(null, []);
