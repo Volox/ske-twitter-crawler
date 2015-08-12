@@ -37,24 +37,34 @@ var prepareQueries = function(seeds, crawlerStartDate, crawlerEndDate, callback)
 
   logger.info("#main - preparing queries");
   
-  // Create an array of queries. One for each day betwee crawlerStartDate and crawlerEndDate
-  // and using all the social media handles of the seeds
-  var twitterQueryCollections = TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate);
-  if(twitterQueryCollections) {
+  // Create an array of queries for each seed using either the crawler's start date, or the
+  // date of the latest tweet retrieved
+  TwitterQuery.buildArrayOfCollectionsForSeeds(seeds, crawlerStartDate, crawlerEndDate, function(err, twitterQueryCollections){
 
-    var queriesCount = _.reduce(_.pluck(twitterQueryCollections, 'queries'), function(memo, array){
-      return memo+array.length;
-    }, 0);
-    
-    logger.info("#main - prepared " + queriesCount +" queries");
-    callback(null, twitterQueryCollections, seeds);
-  }
-  else{
+    if(err) {
 
-    var error = new Error("#main - creating queries");
-    logger.error(error);
-    callback(error);
-  }
+      return callback(err);
+    }
+    else {
+
+      if(twitterQueryCollections) {
+
+        var queriesCount = _.reduce(_.pluck(twitterQueryCollections, 'queries'), function(memo, array){
+          return memo+array.length;
+        }, 0);
+        
+        logger.info("#main - prepared " + queriesCount +" queries");
+        return callback(null, twitterQueryCollections, seeds);
+      }
+      else{
+
+        var error = new Error("#main - creating queries");
+        logger.error(error);
+        return callback(error);
+      }
+    }
+  });
+  
 };
 
 // 3.

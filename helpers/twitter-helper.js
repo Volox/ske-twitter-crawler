@@ -14,7 +14,7 @@ phantom.stderrHandler = function (error) {
         return;
     }
    logger.error('#twitter-helper - Phantom has crashed - ' +  error);
-   logger.errir('#twitter-helper - Exiting with error code = 0');
+   logger.error('#twitter-helper - Exiting with error code = 0');
    mongoose.connection.close();
    process.exit(1);
 
@@ -92,7 +92,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         logger.info('#twitter-helper - Querying twitter with phatom. Attempting IPC through port:' + port);
         
         // create a new phantom process using a new available port
-        phantom.create({ 
+        phantom.create('--load-images=no', { 
           port:port, 
           onExit:function(errorCode){
           	
@@ -107,7 +107,8 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         },function (ph) {
           
           ph.createPage(function (page) {
-            
+
+            page.set('settings.loadImages', false)
             page.onConsoleMessage = function(msg) {
               
               logger.info('#twitter-helper - ' + msg);
