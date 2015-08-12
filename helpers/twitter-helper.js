@@ -115,7 +115,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
             //ph.exit();
             self.retryOnceFlag = false;
             logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
-            return self.scrapeTweetsFromSearchResult(query, callback);  
+            return self.scrapeTweetsFromSearchResult(ph, query, callback);  
           } 
           else {
 
