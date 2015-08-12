@@ -100,7 +100,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
             function(err){
               
               page.close(); 
-              //ph.exit();
+              ph.exit();
               var tweets = self.parseTweetsFromHTML(html) || [];
               logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
               return callback(null, tweets);
