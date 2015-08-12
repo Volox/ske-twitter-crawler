@@ -7,6 +7,15 @@ var querystring = require("querystring");
 var freeport = require('freeport');
 var logger  = require('../core/logger');
 
+
+phantom.stderrHandler = function (error) {
+    if (error.match(/(No such method.*socketSentData)|(CoreText performance note)/)) {
+        return;
+    }
+   logger.error('#twitter-helper - Phantom has crashed - ' +  error);
+};
+
+
 var TwitterHelper = function(){
 
   this.retryOnceFlag = true;
@@ -78,12 +87,13 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
         logger.info('#twitter-helper - Querying twitter with phatom. Attempting IPC through port:' + port);
         
         // create a new phantom process using a new available port
-        phantom.create('', { 
+        phantom.create({ 
           port:port, 
           onExit:function(errorCode){
           	
+		logger.info('#twitter-helper - Phantom exit with code '+errorCode);
             // manage child-process crashes
-          	if(errorCode > 0){ 
+          	if(errorCode != 0){ 
                 
                 // manage first error by re-attempting
                 if(self.retryOnceFlag){
