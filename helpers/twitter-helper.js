@@ -99,7 +99,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
             }, 
             function(err){
               
-              page.close(); 
+              //page.close(); 
               page.release();
               //ph.exit();
               var tweets = self.parseTweetsFromHTML(html) || [];
@@ -112,7 +112,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
           
           if(self.retryOnceFlag){
             
-            page.close();
+            //page.close();
             page.release();
             
             //ph.exit();
@@ -121,7 +121,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
             return self.scrapeTweetsFromSearchResult(ph, query, callback);  
           } 
           else {
-            page.close();
+            //page.close();
             page.release();
             //ph.exit();
             logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
