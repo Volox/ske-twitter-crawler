@@ -55,8 +55,8 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, since, until, cal
 	var self = this;
 	async.each(seeds, function(seed, innerCallback){
 		
-		var pCheckLastQueriedDateForSeed = _.partial(self.checkLastQueriedDateForSeed, _, since);
-		var pBuildArrayOfCollectionsForSeed = _.partial(self.buildArrayOfCollectionsForSeed, _, until);
+		var pCheckLastQueriedDateForSeed = _.partial(self.checkLastQueriedDateForSeed, seed, since);
+		var pBuildArrayOfCollectionsForSeed = _.partial(self.buildArrayOfCollectionsForSeed, _, _, until);
 		var steps = [pCheckLastQueriedDateForSeed, pBuildArrayOfCollectionsForSeed];
 		async.waterfall(steps, function(err, res){
 			
