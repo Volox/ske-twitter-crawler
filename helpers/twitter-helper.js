@@ -72,83 +72,74 @@ TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
   return tweets;
 };
 
-TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback) {
+TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callback) {
    
     var self = this;
     var url = 'https://twitter.com/search?';
     url = url + querystring.stringify(query);
-    
-    PhantomHelper.getPhantomInstace( function (err, ph) {
-      
-      if(err){
 
-        logger.error("#twitter-helper - Could not create phantom instance");
-        return callback(err);
-      }
+    ph.createPage(function (page) {
 
-      ph.createPage(function (page) {
+      page.set('settings.loadImages', false)
 
-        page.set('settings.loadImages', false)
-
-        page.open(url, function (status) {
+      page.open(url, function (status) {
+        
+        if(status === 'success'){
           
-          if(status === 'success'){
-            
-            self.retryOnceFlag = true;
-            var html = undefined;
+          self.retryOnceFlag = true;
+          var html = undefined;
 
-            async.during( 
+          async.during( 
 
-              function(innerCallback){
+            function(innerCallback){
 
-                page.evaluate(function() {
-                 
-                  window.document.body.scrollTop = window.document.body.scrollTop + 10000;
-                  var endTag = $('.stream-end');
-                  return (endTag && endTag.css('display') !== 'none')? document.body.innerHTML:undefined;
+              page.evaluate(function() {
+               
+                window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+                var endTag = $('.stream-end');
+                return (endTag && endTag.css('display') !== 'none')? document.body.innerHTML:undefined;
 
-                },function(result) {
+              },function(result) {
 
-                  html = result;
-                  return innerCallback(null, _.isUndefined(html));
-                });
-              }, 
-              function(innerCallback) {
-                logger.info('#twitter-helper - scrolling down');
-                setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
-              }, 
-              function(err){
-                
-                page.close(); 
-                //ph.exit();
-                var tweets = self.parseTweetsFromHTML(html) || [];
-                logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
-                return callback(null, tweets);
-              }
-            );
-          }
-          else { 
-            
-            if(self.retryOnceFlag){
+                html = result;
+                return innerCallback(null, _.isUndefined(html));
+              });
+            }, 
+            function(innerCallback) {
+              logger.info('#twitter-helper - scrolling down');
+              setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
+            }, 
+            function(err){
               
-              page.close();
+              page.close(); 
               //ph.exit();
-              self.retryOnceFlag = false;
-              logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
-              return self.scrapeTweetsFromSearchResult(query, callback);  
-            } 
-            else {
-
-              page.close();
-              //ph.exit();
-              logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
-              return callback(null, []);
+              var tweets = self.parseTweetsFromHTML(html) || [];
+              logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+              return callback(null, tweets);
             }
-          }
-        });
-      });
+          );
+        }
+        else { 
+          
+          if(self.retryOnceFlag){
+            
+            page.close();
+            //ph.exit();
+            self.retryOnceFlag = false;
+            logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
+            return self.scrapeTweetsFromSearchResult(query, callback);  
+          } 
+          else {
 
+            page.close();
+            //ph.exit();
+            logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
+            return callback(null, []);
+          }
+        }
+      });
     });
+
 };
 
 exports = module.exports = TwitterHelper;
