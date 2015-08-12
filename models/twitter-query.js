@@ -1,5 +1,6 @@
 var _ = require("underscore");
 var moment = require("moment");
+var async = require("async");
 var TwitterQueryCollection = require("./twitter-query-collection");
 var MomentHelper = require("../helpers/moment-helper");
 var Tweet = require("../models/db/tweet")
