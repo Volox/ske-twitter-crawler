@@ -13,6 +13,7 @@ phantom.stderrHandler = function (error) {
         return;
     }
    logger.error('#twitter-helper - Phantom has crashed - ' +  error);
+   process.exit(1);
 };
 
 
