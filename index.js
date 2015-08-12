@@ -17,7 +17,7 @@ var mongo = {
 var crawler = {
   'startDate': process.env.SKE_CRAWLER_START_DATE || '2006-03-21', // start crawling from the foundation date of twitter
   'endDate': process.env.SKE_CRAWLER_END_DATE || moment().format('YYYY-MM-DD'), // crawl until today
-  'regex': process.env.SKE_CRAWLER_REGEX || /.*/ // Crawl for all the seeds in the db
+  'regex': process.env.SKE_CRAWLER_REGEX.replace('\'', '') || /.*/ // Crawl for all the seeds in the db
 };
 
 var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName, crawler.startDate, crawler.endDate];
