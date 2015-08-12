@@ -154,7 +154,6 @@ var crawlTwitterWithQueryBatch = function(ph, twitterQueriesBatch, callback){
 var saveTweets = function(ph, tweets, seedId, callback){
 
   // purge the phantom process
-  ph.process.exit();
   ph.exit();
   ph = undefined;
 
