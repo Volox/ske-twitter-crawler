@@ -113,7 +113,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
           if(self.retryOnceFlag){
             
             page.release();
-            page.close();
+            //page.close();
             //ph.exit();
             self.retryOnceFlag = false;
             logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
@@ -121,7 +121,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
           } 
           else {
             page.release();
-            page.close();
+            //page.close();
             //ph.exit();
             logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
             return callback(null, []);
