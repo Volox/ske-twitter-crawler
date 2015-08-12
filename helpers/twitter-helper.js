@@ -99,8 +99,9 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
             }, 
             function(err){
               
+              page.release();
               page.close(); 
-              ph.exit();
+              //ph.exit();
               var tweets = self.parseTweetsFromHTML(html) || [];
               logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
               return callback(null, tweets);
@@ -111,16 +112,17 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
           
           if(self.retryOnceFlag){
             
+            page.release();
             page.close();
-            ph.exit();
+            //ph.exit();
             self.retryOnceFlag = false;
             logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
             return self.scrapeTweetsFromSearchResult(ph, query, callback);  
           } 
           else {
-
+            page.release();
             page.close();
-            ph.exit();
+            //ph.exit();
             logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
             return callback(null, []);
           }
