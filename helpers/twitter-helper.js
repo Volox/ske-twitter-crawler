@@ -2,18 +2,21 @@
 var phantom = require('phantom');
 var cheerio = require('cheerio');
 var async = require('async');
+var mongoose = require('mongoose');
 var _       = require("underscore");
 var querystring = require("querystring");
 var freeport = require('freeport');
 var logger  = require('../core/logger');
 
-
 phantom.stderrHandler = function (error) {
-    if (error.match(/(No such method.*socketSentData)|(CoreText performance note)/)) {
+    
+   if (error.match(/(No such method.*socketSentData)|(CoreText performance note)/)) {
         return;
     }
    logger.error('#twitter-helper - Phantom has crashed - ' +  error);
+   mongoose.connection.close();
    process.exit(1);
+
 };
 
 
@@ -93,21 +96,10 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
           onExit:function(errorCode){
           	
 		logger.info('#twitter-helper - Phantom exit with code '+errorCode);
-            // manage child-process crashes
-          	if(errorCode != 0){ 
-                
-                // manage first error by re-attempting
-                if(self.retryOnceFlag){
-              		
-                  self.retryOnceFlag = false;
-              		logger.info('#twitter-helper - phantom process has crashed. Trying once again ');
-              		return self.scrapeTweetsFromSearchResult(query, callback);  
-          	    }
-          	     // manage second error by skipping the query
-                else {
+                // manage child-process crashes
+		if(_.isUndefined(errorCode) || errorCode !== 0){              		
                   logger.error('#twitter-helper - phantom process crashed twice with the same query, Skiping query');
                   return callback(null, []);
-          	    }
           	}
          }
         },function (ph) {
