@@ -142,6 +142,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
                   }, 
                   function(err){
                     
+	            page.close(); 
                     ph.exit();
                     var tweets = self.parseTweetsFromHTML(html) || [];
                     logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
@@ -152,14 +153,14 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback)
               else { 
                 
                 if(self.retryOnceFlag){
-
+                  page.close();
                   ph.exit();
                   self.retryOnceFlag = false;
                   logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
                   return self.scrapeTweetsFromSearchResult(query, callback);  
                 } 
                 else {
-
+                    page.close();
                     ph.exit();
                     logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
                     return callback(null, []);
