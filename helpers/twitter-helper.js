@@ -101,6 +101,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
               
               //page.close(); 
               page.release();
+              page = undefined;
               //ph.exit();
               var tweets = self.parseTweetsFromHTML(html) || [];
               logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
@@ -114,6 +115,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
             
             //page.close();
             page.release();
+            page = undefined;
             //ph.exit();
             self.retryOnceFlag = false;
             logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
@@ -122,6 +124,7 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
           else {
             //page.close();
             page.release();
+            page = undefined;
             //ph.exit();
             logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
             return callback(null, []);

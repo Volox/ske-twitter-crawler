@@ -86,7 +86,7 @@ var crawlTwitterWithQueryCollections = function(twitterQueryCollections, seeds, 
     async.series([pCrawlTwitterWithQueryCollection, pMarkSeedAsCrawled], firstCallback);
     
   }, callback);
-}
+};
 
 var crawlTwitterWithQueryCollection = function(twitterQueryCollection, crawlerParallelQueries, callback){
   
@@ -182,6 +182,8 @@ var saveTweets = function(ph, tweets, seedId, callback){
 
     Tweet.create(tweets, function(err, result) {
 
+      tweets = undefined;
+      
       if(err) {
         
         // Manage duplicated key errors.  
@@ -223,8 +225,7 @@ var markSeedAsCrawled = function(seed, callback){
   seed.crawled = true;
   seed.save(function(err){
     
-    // purge seed memory
-    seed = undefined;
+
 
     if(err) {
 
@@ -233,6 +234,11 @@ var markSeedAsCrawled = function(seed, callback){
     }
 
     logger.info('#main - Marked seed ' + seed._id + ' as crawled');
+
+    // purge seed memory
+    seed = undefined;
+
+
     return callback(null);
   });
 }
