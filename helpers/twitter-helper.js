@@ -7,6 +7,7 @@ var _       = require("underscore");
 var querystring = require("querystring");
 var freeport = require('freeport');
 var logger  = require('../core/logger');
+var PhantomHelper = require('../helpers/phantom-helper');
 
 phantom.stderrHandler = function (error) {
     
@@ -17,9 +18,7 @@ phantom.stderrHandler = function (error) {
    logger.error('#twitter-helper - Exiting with error code = 0');
    mongoose.connection.close();
    process.exit(1);
-
 };
-
 
 var TwitterHelper = function(){
 
@@ -76,102 +75,76 @@ TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
 TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback) {
    
     var self = this;
-    
-   freeport(function(err, port){
+    PhantomHelper.getPhantomInstace( function (err, ph) {
       
-      if(err) {
+      if(err){
 
-        logger.error('#twitter-helper - Could not find an available port - ' +  err);
+        logger.error("#twitter-helper - Could not create phantom instance");
         return callback(err);
       }
-      else {
 
-        var url = 'https://twitter.com/search?';
-        url = url + querystring.stringify(query);
-        
-        logger.info('#twitter-helper - Querying twitter with phatom. Attempting IPC through port:' + port);
-        
-        // create a new phantom process using a new available port
-        phantom.create('--load-images=no', { 
-          port:port, 
-          onExit:function(errorCode){
-          	
-		logger.info('#twitter-helper - Phantom exit with code '+errorCode);
-                // manage child-process crashes
-		if(_.isUndefined(errorCode) || errorCode !== 0){              		
-                  logger.error('#twitter-helper - phantom process crashed - ' + errorCode);
-                  //return callback(null, []);
-          	  process.exit(1);
-                }
-         }
-        },function (ph) {
+      ph.createPage(function (page) {
+
+        page.set('settings.loadImages', false)
+
+        page.open(url, function (status) {
           
-          ph.createPage(function (page) {
+          if(status === 'success'){
+            
+            self.retryOnceFlag = true;
+            var html = undefined;
 
-            page.set('settings.loadImages', false)
-            page.onConsoleMessage = function(msg) {
-              
-              logger.info('#twitter-helper - ' + msg);
-            };
+            async.during( 
 
-            page.open(url, function (status) {
-              
-              if(status === 'success'){
+              function(innerCallback){
+
+                page.evaluate(function() {
+                 
+                  window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+                  var endTag = $('.stream-end');
+                  return (endTag && endTag.css('display') !== 'none')? document.body.innerHTML:undefined;
+
+                },function(result) {
+
+                  html = result;
+                  return innerCallback(null, _.isUndefined(html));
+                });
+              }, 
+              function(innerCallback) {
+                logger.info('#twitter-helper - scrolling down');
+                setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
+              }, 
+              function(err){
                 
-                self.retryOnceFlag = true;
-                var html = undefined;
-
-                async.during( 
-
-                  function(innerCallback){
-
-                    page.evaluate(function() {
-                     
-                      window.document.body.scrollTop = window.document.body.scrollTop + 10000;
-                      var endTag = $('.stream-end');
-                      return (endTag && endTag.css('display') !== 'none')? document.body.innerHTML:undefined;
-
-                    },function(result) {
-
-                      html = result;
-                      return innerCallback(null, _.isUndefined(html));
-                    });
-                  }, 
-                  function(innerCallback) {
-                    logger.info('#twitter-helper - scrolling down');
-                    setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
-                  }, 
-                  function(err){
-                    
-	            page.close(); 
-                    ph.exit();
-                    var tweets = self.parseTweetsFromHTML(html) || [];
-                    logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
-                    return callback(null, tweets);
-                  }
-                );
+                page.close(); 
+                //ph.exit();
+                var tweets = self.parseTweetsFromHTML(html) || [];
+                logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+                return callback(null, tweets);
               }
-              else { 
-                
-                if(self.retryOnceFlag){
-                  page.close();
-                  ph.exit();
-                  self.retryOnceFlag = false;
-                  logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
-                  return self.scrapeTweetsFromSearchResult(query, callback);  
-                } 
-                else {
-                    page.close();
-                    ph.exit();
-                    logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
-                    return callback(null, []);
-                }
-              }
+            );
+          }
+          else { 
+            
+            if(self.retryOnceFlag){
+              
+              page.close();
+              //ph.exit();
+              self.retryOnceFlag = false;
+              logger.info('#twitter-helper - page.open returned : ' +  status + ' retrying once more');
+              return self.scrapeTweetsFromSearchResult(query, callback);  
+            } 
+            else {
 
-            });
-          });
+              page.close();
+              //ph.exit();
+              logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
+              return callback(null, []);
+            }
+          }
         });
-      }
+      });
+
     });
 };
 
