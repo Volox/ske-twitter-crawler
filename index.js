@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var _        = require("underscore");
+var heapdump = require('heapdump');
 var moment   = require("moment");
 var logger   = require("./core/logger");
 var main     = require("./core/main");
