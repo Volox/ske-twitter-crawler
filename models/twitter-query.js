@@ -58,7 +58,7 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, since, until, cal
 		var pCheckLastQueriedDateForSeed = _.partial(self.checkLastQueriedDateForSeed, seed, since);
 		var pBuildArrayOfCollectionsForSeed = _.partial(self.buildArrayOfCollectionsForSeed, _, _, until);
 		var steps = [pCheckLastQueriedDateForSeed, pBuildArrayOfCollectionsForSeed];
-		async.waterfall(steps, function(err, res){
+		async.waterfall(steps, function(err, seedQueries){
 			
 			if(err) {
 
@@ -66,7 +66,8 @@ TwitterQuery.buildArrayOfCollectionsForSeeds = function(seeds, since, until, cal
 			}
 			else {
 				
-				queries.push(res);
+				var twitterQueryCollection = new TwitterQueryCollection(seedQueries, seed._id);
+				queries.push(twitterQueryCollection);
 				return innerCallback(null);
 			}
 		});
