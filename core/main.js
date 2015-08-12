@@ -12,12 +12,12 @@ var Tweet = require('../models/db/tweet.js');
 var Seed = require('../models/db/seed.js');
 
 // 1. 
-var retrieveSeeds = function(callback) {
+var retrieveSeeds = function(regex, callback) {
   
   logger.info("#main - retrieveing seeds");
 
-  // Retrieve the seeds that have not been crawled and that have twitter-handles
-  Seed.find({twitter:{$not:{$size:0}}, crawled:false}, function(err, seeds){
+  // Retrieve the seeds that: a) have a name that matches the regex; b) have not been crawled; and c) Have twitter-handles
+  Seed.find({entityName:{$regex:regex, $options:'i'}, twitter:{$not:{$size:0}}, crawled:false}, function(err, seeds){
     
     if(err) {
 
@@ -206,8 +206,9 @@ var markSeedAsCrawled = function(seed, callback){
 exports = module.exports = {
   
   start:function(crawler, callback){
-
+    
+    pRetrieveSeeds = _.partial(retrieveSeeds, crawler.regex);
     pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
-    async.waterfall([retrieveSeeds, pPrepareQueries, crawlTwitterWithQueryCollections], callback);
+    async.waterfall([pRetrieveSeeds, pPrepareQueries, crawlTwitterWithQueryCollections], callback);
   }
 };
