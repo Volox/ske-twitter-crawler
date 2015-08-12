@@ -130,8 +130,7 @@ var crawlTwitterWithQueryBatch = function(ph, twitterQueriesBatch, callback){
   async.eachSeries(twitterQueriesBatch, function(twitterQuery, firstCallback){
 
     // Retrieve tweets and save them
-    var twitterHelper = new TwitterHelper();
-    twitterHelper.scrapeTweetsFromSearchResult(ph, twitterQuery, function(err, tweets){
+    TwitterHelper.scrapeTweetsFromSearchResult(ph, twitterQuery, function(err, tweets){
       
       if(err){
         return firstCallback(err);
@@ -183,7 +182,7 @@ var saveTweets = function(ph, tweets, seedId, callback){
     Tweet.create(tweets, function(err, result) {
 
       tweets = undefined;
-      
+
       if(err) {
         
         // Manage duplicated key errors.  
@@ -225,7 +224,6 @@ var markSeedAsCrawled = function(seed, callback){
   seed.crawled = true;
   seed.save(function(err){
     
-
 
     if(err) {
 

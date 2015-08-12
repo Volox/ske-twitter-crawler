@@ -8,59 +8,59 @@ var querystring = require("querystring");
 var freeport = require('freeport');
 var logger  = require('../core/logger');
 
-var TwitterHelper = function(){
-
-  this.retryOnceFlag = true;
-};
-
-TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
+exports = module.exports = {
   
-  if(_.isUndefined(html)){
-    return undefined;
-  }
-
-  var $ = cheerio.load(html);
-
-  var $tweets = $("#stream-items-id .tweet");
-
-  var tweets = _.map($tweets, function(element) {
-
-    var $tweet = $(element);
-
-    // Retrieving the id
-    var id = $tweet.attr('data-tweet-id');
-
-    // Retrieving the text
-    var text = $tweet.find('.tweet-text').text();
-
-    // Retrieving the account
-    var $account = $tweet.find('.account-group');
-    var userId = $account.attr('data-user-id');
-
-    // Retrieving the account
-    var $timestamp = $tweet.find('._timestamp');
-    var timestamp = $timestamp.attr('data-time');
-
-    // Retrieving the geolocalization
-    var $geo = $tweet.find('.ProfileTweet-geo');
-    var geo;
-    if ($geo.length !== 0) {
-      geo = $geo.attr('data-original-title') || $geo.attr('title') || $geo.find('.u-hiddenVisually').text();
+  retryOnceFlag:true,
+  
+  parseTweetsFromHTML: function(html) {
+  
+    if(_.isUndefined(html)){
+      return undefined;
     }
 
-    return {
-      tweetId: id,
-      text: text,
-      userId: userId,
-      timestamp: timestamp,
-      location: geo
-    };
-  });
+    var $ = cheerio.load(html);
 
-  return tweets;
-};
+    var $tweets = $("#stream-items-id .tweet");
 
-TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callback) {
+    var tweets = _.map($tweets, function(element) {
+
+      var $tweet = $(element);
+
+      // Retrieving the id
+      var id = $tweet.attr('data-tweet-id');
+
+      // Retrieving the text
+      var text = $tweet.find('.tweet-text').text();
+
+      // Retrieving the account
+      var $account = $tweet.find('.account-group');
+      var userId = $account.attr('data-user-id');
+
+      // Retrieving the account
+      var $timestamp = $tweet.find('._timestamp');
+      var timestamp = $timestamp.attr('data-time');
+
+      // Retrieving the geolocalization
+      var $geo = $tweet.find('.ProfileTweet-geo');
+      var geo;
+      if ($geo.length !== 0) {
+        geo = $geo.attr('data-original-title') || $geo.attr('title') || $geo.find('.u-hiddenVisually').text();
+      }
+
+      return {
+        tweetId: id,
+        text: text,
+        userId: userId,
+        timestamp: timestamp,
+        location: geo
+      };
+    });
+
+    return tweets;
+  },
+
+
+  scrapeTweetsFromSearchResult : function(ph, query, callback) {
    
     var self = this;
     var url = 'https://twitter.com/search?';
@@ -132,7 +132,5 @@ TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(ph, query, callb
         }
       });
     });
-
+  },
 };
-
-exports = module.exports = TwitterHelper;
