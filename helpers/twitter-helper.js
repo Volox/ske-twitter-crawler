@@ -75,6 +75,9 @@ TwitterHelper.prototype.parseTweetsFromHTML = function(html) {
 TwitterHelper.prototype.scrapeTweetsFromSearchResult = function(query, callback) {
    
     var self = this;
+    var url = 'https://twitter.com/search?';
+    url = url + querystring.stringify(query);
+    
     PhantomHelper.getPhantomInstace( function (err, ph) {
       
       if(err){
