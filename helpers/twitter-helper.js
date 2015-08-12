@@ -14,7 +14,7 @@ exports = module.exports = {
   
   parseTweetsFromHTML: function(html) {
   
-    if(_.isUndefined(html)){
+    if(_.isUndefined(html) || _.isNull(html)){
       return undefined;
     }
 
