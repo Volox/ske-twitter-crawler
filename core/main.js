@@ -206,9 +206,9 @@ exports = module.exports = {
   
   start:function(crawler, callback){
     
-    pRetrieveSeeds = _.partial(retrieveSeeds, crawler.regex);
-    pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
-    pCrawlTwitterWithQueryCollections(crawlTwitterWithQueryCollections, _, _, crawler.parallelQueries);
+    var pRetrieveSeeds = _.partial(retrieveSeeds, crawler.regex);
+    var pPrepareQueries = _.partial(prepareQueries, _, crawler.startDate, crawler.endDate);
+    var pCrawlTwitterWithQueryCollections = _.partial(crawlTwitterWithQueryCollections, _, _, crawler.parallelQueries);
     async.waterfall([pRetrieveSeeds, pPrepareQueries, pCrawlTwitterWithQueryCollections], callback);
   }
 };
