@@ -29,7 +29,7 @@ if(StringUtilities.checkStringsNotEmpty(requiredVariables)){
   mongo.hostAndPort = mongo.protocolHostAndPort.slice(_.lastIndexOf(mongo.protocolHostAndPort, "/") +1 );
   
   // Start database
-  logger.info('#index - Connecting to the database');
+  logger.info('#index - Connecting to the database: '+mongo.dbName + ' located at:' + mongo.hostAndPort);
   mongoose.connect("mongodb://"+mongo.hostAndPort+"/"+mongo.dbName);
   db = mongoose.connection; 
   

@@ -14,7 +14,7 @@ var Seed = require('../models/db/seed.js');
 // 1. 
 var retrieveSeeds = function(regex, callback) {
   
-  logger.info("#main - retrieveing seeds");
+  logger.info("#main - Retrieveing seeds that match regex: " + regex );
 
   // Retrieve the seeds that: a) have a name that matches the regex; b) have not been crawled; and c) Have twitter-handles
   Seed.find({entityName:{$regex:regex, $options:'i'}, twitter:{$not:{$size:0}}, crawled:false}, function(err, seeds){
