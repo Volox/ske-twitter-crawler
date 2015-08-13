@@ -22,10 +22,10 @@ var crawler = {
   'parallelQueries': process.env.SKE_CRAWLER_PARALLEL_QUERIES || 1 // Do one request at the time
 };
 
-var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName, crawler.startDate, crawler.endDate, crawler.parallelQueries];
+var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName, crawler.startDate, crawler.endDate];
 
 // Check if environment variables have been set
-if( StringUtilities.checkStringsNotEmpty(requiredVariables) && !_.isUndefined(crawler.regex) ){
+if( StringUtilities.checkStringsNotEmpty(requiredVariables) && !_.isUndefined(crawler.regex) && _.isNumber(crawler.parallelQueries) && crawler.parallelQueries > 0 ){
   
   // Slice out the Protocol prefix - i.e tcp://
   mongo.hostAndPort = mongo.protocolHostAndPort.slice(_.lastIndexOf(mongo.protocolHostAndPort, "/") +1 );
