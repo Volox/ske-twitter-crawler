@@ -11,7 +11,6 @@ exports = module.exports = {
 
 				return !_.isUndefined(string) && !_.isEmpty(string)
 			});
-			
 		}
 		return false;
 	}
