@@ -10,15 +10,14 @@ var logger = new winston.Logger({
             json: false,
             colorize: true,
             timestamp:true
-        })
-        /*,
+        }),
+        
         // setup logging to file
         new(winston.transports.File)({
-            filename: './logs/crawler.log',
+            filename: process.env.PWD+'/logs/crawler.log',
             maxsize: 1024 * 1024 * 10, // 10MB
             level: 'info'
         })
-        */
     ],
     exitOnError: false
 });

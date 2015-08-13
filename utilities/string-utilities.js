@@ -7,15 +7,11 @@ exports = module.exports = {
 
 		if( _.isArray(strings) ){
 			
-			_.each(strings, function(string){
+			return _.every(strings, function(string){
 
-				if( _.isUndefined(string) || _.isEmpty(string)){
-
-					return false;
-				}
+				return !_.isUndefined(string) && !_.isEmpty(string)
 			});
-
-			return true;
+			
 		}
 		return false;
 	}
