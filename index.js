@@ -2,7 +2,6 @@
 
 var mongoose = require('mongoose');
 var _        = require("underscore");
-//var heapdump = require('heapdump');
 var moment   = require("moment");
 var logger   = require("./core/logger");
 var main     = require("./core/main");
@@ -22,10 +21,10 @@ var crawler = {
   'parallelQueries': process.env.SKE_CRAWLER_PARALLEL_QUERIES || 1 // Do one request at the time
 };
 
-var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName, crawler.startDate, crawler.endDate];
+var requiredVariables = [mongo.protocolHostAndPort, mongo.dbName];
 
 // Check if environment variables have been set
-if( StringUtilities.checkStringsNotEmpty(requiredVariables) && !_.isUndefined(crawler.regex) && _.isNumber(crawler.parallelQueries) && crawler.parallelQueries > 0 ){
+if( StringUtilities.checkStringsNotEmpty(requiredVariables) ){
   
   // Slice out the Protocol prefix - i.e tcp://
   mongo.hostAndPort = mongo.protocolHostAndPort.slice(_.lastIndexOf(mongo.protocolHostAndPort, "/") +1 );
