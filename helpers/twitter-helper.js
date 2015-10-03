@@ -64,7 +64,6 @@ exports = module.exports = {
     return tweets;
   },
 
-
   scrapeTweetsFromSearchResult : function(ph, query, callback) {
    
     var self = this;
@@ -84,24 +83,38 @@ exports = module.exports = {
 
           async.during( 
 
+            // Async Function
             function(innerCallback){
 
               page.evaluate(function() {
                
+                // scrolls the page 10000 pixels
                 window.document.body.scrollTop = window.document.body.scrollTop + 10000;
+                
+                // loads the HTML into cheerio
+                var $ = cheerio.load(window.document.body.innerHTML);
+                
+                // checks whether we have reached the end of the twitter-stream
                 var endTag = $('.stream-end');
-                return (endTag && endTag.css('display') !== 'none')? document.body.innerHTML:undefined;
+
+                // if we have reached the end of the stream it returns the whole HTML, otherwise it returns undefined
+                return (endTag && endTag.css('display') !== 'none')? window.document.body.innerHTML:undefined;
 
               },function(result) {
 
+                // invokes the test-callback passing the outcome of the test html===undefined
                 html = result;
                 return innerCallback(null, _.isUndefined(html));
               });
             }, 
+            // Test Function
             function(innerCallback) {
+              
+              // Waits 1.5 seconds to invoke the Async Funciton, and scroll down the page
               logger.info('#twitter-helper - scrolling down');
-              setTimeout(innerCallback, 1500); // wait 1.5 seconds to scroll down
+              setTimeout(innerCallback, 1500); 
             }, 
+            // Complete Function
             function(err){
               
               var tweets = self.parseTweetsFromHTML(html) || [];
