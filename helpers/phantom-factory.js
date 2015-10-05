@@ -3,6 +3,7 @@ var _       = require("underscore");
 var logger  = require('../core/logger');
 var phantom = require('phantom');
 var freeport = require('freeport');
+var mongoose = require('mongoose');
 
 // Configure phantom's standard error so that it exits every time it crashes
 phantom.stderrHandler = function (error) {
