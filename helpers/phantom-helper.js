@@ -1,58 +1,86 @@
-var async = require('async');
-var _       = require("underscore");
-var logger  = require('../core/logger');
+
 var phantom = require('phantom');
-var freeport = require('freeport');
+var async = require('async');
+var querystring = require('querystring');
+var CheerioHelper = require('cheerio-helper');
+var logger  = require('../core/logger');
 
-// Configure phantom's standard error so that it exits every time it crashes
-phantom.stderrHandler = function (error) {
-    
-   if (error.match(/(No such method.*socketSentData)|(CoreText performance note)/)) {
-        return;
-    }
-    logger.error('#phantom-helper - Phantom has crashed - ' +  error);
-    logger.error('#phantom-helper - Exiting with error code = 0');
-    mongoose.connection.close();
-    process.exit(1);
-};
+exports = module.exports = {
+  
+  retryOnceFlag:true,
+  
+  scrapeTweetsFromSearchResult : function(ph, query, callback) {
+   
+    var self = this;
+    var url = 'https://twitter.com/search?';
+    url = url + querystring.stringify(query);
 
-module.exports = {
+    ph.createPage(function (page) {
 
-	// Builds phantom instances on demand
-	getPhantomInstace: function(callback) {
+      page.set('settings.loadImages', false)
 
-		var self = this;
+      page.open(url, function (status) {
+        
+        if(status === 'success'){
+          
+          self.retryOnceFlag = true;
 
-		freeport(function(err, port){
+          // the code in this method acts as if it was within the loaded page
+          page.evaluate(function() {
+              
+              // A throttled function used to scroll down the page every 1.5 seconds
+              var scrollDown = function(){
+                
+                window.document.body.scrollTop = window.document.body.scrollTop + 10000;              
+                var tag = document.querySelector('.stream-end')
+                if(tag && getComputedStyle(tag).getPropertyValue('display') === 'none'){
+                  
+                  setTimeout(scrollDown, 1500); 
 
-			if(err) {
+                }  else{
+                  
+                  // Returns undefined if the stream-end tag was not found. Returns loaded HTML in any other case
+                  return (tag === null)? undefined: window.document.body.innerHTML
+                }
+              };
+              
+              return scrollDown();             
+             
+          }, function(result) {
 
-				logger.error('#phantom-helper - Could not find an available port - ' +  err);
-				return callback(err);
-			}
-			else {
+              var tweets = CheerioHelper.parseTweetsFromHTML(result) || [];
+              logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+              
+              page.release();
+              page = null;
+              return callback(null, tweets);
+          });
+        }
+        else { 
+          
+          // Checks whether the operation has failed before
+          if(self.retryOnceFlag){
 
-				// create a new phantom process using a new available port
-				phantom.create('--load-images=no', { 
+            // Free's up memory
+            page.release();
+            page = null;
 
-					port:port, 
-					onExit:function(errorCode){
-						
-						logger.info('#phantom-helper - Phantom exit with code '+errorCode);
-						 
-						if(_.isUndefined(errorCode) || errorCode !== 0){              		
-						    
-						    logger.error('#phantom-helper - phantom process crashed - ' + errorCode);
-							process.exit(1);
-						}
-					}
-				}, function(ph){
+            self.retryOnceFlag = false;
+            logger.info('#twitter-helper - page.open returned : ' +  status + '. Attemptin once more');
+            return self.scrapeTweetsFromSearchResult(ph, query, callback);  
+          } 
+          else {
+            
+            // Free's up memory
+            page.release();
+            page = null;
 
-					self.ph = ph;
-					return callback(null, ph)
-				});
-			}
-		});
-	},
+            logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
+            return callback(null, []);
+          }
+        }
+      });
 
+    });
+  },
 };

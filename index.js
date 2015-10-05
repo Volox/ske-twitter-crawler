@@ -1,5 +1,4 @@
 
-
 var mongoose = require('mongoose');
 var _        = require("underscore");
 var moment   = require("moment");
@@ -43,11 +42,11 @@ if( StringUtilities.checkStringsNotEmpty(requiredVariables) ){
       console.timeEnd('crawl-twitter');
       
       if(err) {
-        
+        // @TODO communicate error to the rabbit server
         logger.info("#index - Finshed with Error" + err);
         return process.exit(1);
       } 
-      
+      // @TODO communicate success to the rabbit server
       logger.info("#index - Finished succesfully")
       return process.exit();
     });
