@@ -6,7 +6,7 @@ var logger = require("./logger");
 var TwitterQuery = require("../models/twitter-query");
 var TwitterQueryCollection = require("../models/twitter-query-collection");
 var ArrayUtilities = require("../utilities/array-utilities");
-var PhantomFactory = require('../helpers/phantom-helper');
+var PhantomFactory = require('../helpers/phantom-factory');
 var PhantomHelper = require("../helpers/phantom-helper");
 
 var Tweet = require('../models/db/tweet.js');
