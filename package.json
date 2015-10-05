@@ -28,6 +28,6 @@
     "mongoose": "^4.1.0",
     "phantom": "^0.7.2",
     "winston": "^1.0.1",
-    "underscore": "^1.8.3",
+    "underscore": "^1.8.3"
   }
 }

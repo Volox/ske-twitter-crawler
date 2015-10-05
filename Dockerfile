@@ -1,17 +1,14 @@
-FROM acerosalazar/ubuntu-node
+# uses a container that has all the phantom dependencies installed
+FROM acerosalazar/ubuntu-node-phantom
 
-# deploy the code 
-RUN git clone https://github.com/acerosalazar/ske-twitter-crawler
+# sets the workindig directory
+WORKDIR /src
 
-# install the nodejs dependencies
-RUN cd ske-twitter-crawler; npm install
+# sets environment varialbles
+ENV SKE_DATABASE_NAME ske
 
-# install phantomjs
-RUN wget https://github.com/eugene1g/phantomjs/releases/download/2.0.0-bin/phantomjs-2.0.0-ubuntu_x86_64.zip
-RUN unzip phantomjs-2.0.0-ubuntu_x86_64.zip; mv phantomjs /usr/local/bin
-RUN rm phantomjs-2.0.0-ubuntu_x86_64.zip
+# deploys the code and installs the dependencies 
+RUN git clone https://github.com/acerosalazar/ske-twitter-crawler . ; npm install 
 
-#install missing phantomjs dependencies
-RUN apt-get install -y libfontconfig libjpeg-turbo8 libicu52
-
-CMD ["node", "/ske-twitter-crawler/index.js"]
+# makes sure the latest version of the code is being used, and starts the application
+CMD git pull origin master; node index.js
