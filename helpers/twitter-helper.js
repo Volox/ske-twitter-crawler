@@ -86,19 +86,29 @@ exports = module.exports = {
             // Async Function
             function(innerCallback){
 
+              // the code in this method acts as if it was within the loaded page
               page.evaluate(function() {
                
                 // scrolls the page 10000 pixels
                 window.document.body.scrollTop = window.document.body.scrollTop + 10000;
                 
-                // loads the HTML into cheerio
-                var $ = cheerio.load(window.document.body.innerHTML);
-                
-                // checks whether we have reached the end of the twitter-stream
-                var endTag = $('.stream-end');
+                // Stores the decision of whether the window should be scrolled down or not
+                var shouldScrollDown = true;
 
-                // if we have reached the end of the stream it returns the whole HTML, otherwise it returns undefined
-                return (endTag && endTag.css('display') !== 'none')? window.document.body.innerHTML:undefined;
+                // Checks whether the class '.stream-end' exists
+                var tag = document.querySelector('.stream-end')
+                if (tag !== null){
+
+                    var display = getComputedStyle(tag).getPropertyValue('display');  
+                    if(display !== 'none') {
+
+                      shouldScrollDown = false;
+
+                    }
+                }
+              
+                // If we haven't reached the end of the stream it returns undefined, otherwise it returns the whole HTML
+                return (shouldScrollDown)? undefined : window.document.body.innerHTML;
 
               },function(result) {
 
