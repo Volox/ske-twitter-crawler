@@ -1,5 +1,5 @@
-var PhantomHelper = require('../Helpers/phantom-helper')
-var PhantomFactory = require('../Helpers/phantom-factory')
+var PhantomHelper = require('../helpers/phantom-helper')
+var PhantomFactory = require('../helpers/phantom-factory')
 
 PhantomFactory.getPhantomInstace(function(err, ph){
   if(!err){
