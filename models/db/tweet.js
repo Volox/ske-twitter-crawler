@@ -9,6 +9,7 @@ var TweetSchema = new Schema({
   timestamp: String,
   userId: String,
   date: Date,
+  analyzedDbpedia:{type:Boolean, default:false},
   seed:{ type: Schema.Types.ObjectId, ref: 'seed' }
 });
 
