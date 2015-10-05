@@ -3,11 +3,11 @@ var async = require('async');
 var _ = require("underscore");
 var logger = require("./logger");
 
-var PhantomHelper = require("../helpers/twitter-helper");
 var TwitterQuery = require("../models/twitter-query");
 var TwitterQueryCollection = require("../models/twitter-query-collection");
 var ArrayUtilities = require("../utilities/array-utilities");
 var PhantomFactory = require('../helpers/phantom-helper');
+var PhantomHelper = require("../helpers/phantom-helper");
 
 var Tweet = require('../models/db/tweet.js');
 var Seed = require('../models/db/seed.js');

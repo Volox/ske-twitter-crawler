@@ -1,86 +1,93 @@
-
-var phantom = require('phantom');
-var async = require('async');
-var querystring = require('querystring');
-var CheerioHelper = require('cheerio-helper');
-var logger  = require('../core/logger');
+var phantom = require("phantom");
+var async = require("async");
+var mongoose = require("mongoose");
+var _       = require("underscore");
+var querystring = require("querystring");
+var logger  = require("../core/logger");
+var CheerioHelper = require("./cheerio-helper");
 
 exports = module.exports = {
   
   retryOnceFlag:true,
-  
+   
   scrapeTweetsFromSearchResult : function(ph, query, callback) {
    
     var self = this;
-    var url = 'https://twitter.com/search?';
+    var url = "https://twitter.com/search?";
     url = url + querystring.stringify(query);
-
+    
     ph.createPage(function (page) {
 
-      page.set('settings.loadImages', false)
+      page.set("settings.loadImages", false)
 
       page.open(url, function (status) {
         
-        if(status === 'success'){
+        if(status === "success"){
           
           self.retryOnceFlag = true;
+          var html = undefined;
+          
+	  async.during( 
 
-          // the code in this method acts as if it was within the loaded page
-          page.evaluate(function() {
-              
-              // A throttled function used to scroll down the page every 1.5 seconds
-              var scrollDown = function(){
+            // Async Function
+            function(innerCallback){
+
+              // the code in this method acts as if it was within the loaded page
+              page.evaluate(function() {
+               
+                // scrolls the page 10000 pixels
+                window.document.body.scrollTop = window.document.body.scrollTop + 10000;
                 
-                window.document.body.scrollTop = window.document.body.scrollTop + 10000;              
-                var tag = document.querySelector('.stream-end')
-                if(tag && getComputedStyle(tag).getPropertyValue('display') === 'none'){
-                  
-                  setTimeout(scrollDown, 1500); 
+                // Checks whether the class ".stream-end" exists
+                var endTag = $(".stream-end");
+                return (endTag && endTag.css("display") !== "none")? document.body.innerHTML:undefined;
 
-                }  else{
-                  
-                  // Returns undefined if the stream-end tag was not found. Returns loaded HTML in any other case
-                  return (tag === null)? undefined: window.document.body.innerHTML
-                }
-              };
+              },function(result) {
+ 		
+                html = result;
+                // Checks for null, because PhantomJS is crazy :S
+		return innerCallback(null, _.isNull(html));
+              });
+            }, 
+            // Test Function
+            function(innerCallback) {
               
-              return scrollDown();             
-             
-          }, function(result) {
-
-              var tweets = CheerioHelper.parseTweetsFromHTML(result) || [];
-              logger.info('#twitter-helper - Retrieved ' + tweets.length + ' tweets');
+              // Waits 1.5 seconds to invoke the Async Funciton, and scroll down the page
+              logger.info("#twitter-helper - scrolling down");
+              setTimeout(innerCallback, 1500); 
+            }, 
+            // Complete Function
+            function(err){
+              
+              var tweets = CheerioHelper.parseTweetsFromHTML(html) || [];
+              logger.info("#twitter-helper - Retrieved " + tweets.length + " tweets");
               
               page.release();
               page = null;
+              html = null;
               return callback(null, tweets);
-          });
+            }
+          );
         }
         else { 
           
-          // Checks whether the operation has failed before
           if(self.retryOnceFlag){
-
-            // Free's up memory
+            
             page.release();
             page = null;
-
-            self.retryOnceFlag = false;
-            logger.info('#twitter-helper - page.open returned : ' +  status + '. Attemptin once more');
+	    self.retryOnceFlag = false;
+            logger.info("#twitter-helper - page.open returned : " +  status + " retrying once more");
             return self.scrapeTweetsFromSearchResult(ph, query, callback);  
           } 
           else {
             
-            // Free's up memory
-            page.release();
+	    page.release();
             page = null;
-
-            logger.error('#twitter-helper - page.open returned : ' +  status + ' twice');
+            logger.error("#twitter-helper - page.open returned : " +  status + " twice");
             return callback(null, []);
           }
         }
       });
-
     });
   },
 };
