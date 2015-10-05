@@ -19,6 +19,7 @@ PhantomFactory.getPhantomInstace(function(err,  ph){
       assert.equal(tweets.length,expectedTweets,"Did not retrieve the right amount of tweets");
       assert.equal(_.last(tweets).tweetId, lastTweetId, "Did not rertrieve all the authored tweets up to the last-one");
       console.log("All tests passsed!")  
+      ph.exit();
       process.exit(1);
     }
   });
