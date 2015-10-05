@@ -3,11 +3,11 @@ var async = require('async');
 var _ = require("underscore");
 var logger = require("./logger");
 
-var TwitterHelper = require("../helpers/twitter-helper");
+var PhantomHelper = require("../helpers/twitter-helper");
 var TwitterQuery = require("../models/twitter-query");
 var TwitterQueryCollection = require("../models/twitter-query-collection");
 var ArrayUtilities = require("../utilities/array-utilities");
-var PhantomHelper = require('../helpers/phantom-helper');
+var PhantomFactory = require('../helpers/phantom-helper');
 
 var Tweet = require('../models/db/tweet.js');
 var Seed = require('../models/db/seed.js');
@@ -110,7 +110,7 @@ var crawlTwitterWithQueryCollection = function(twitterQueryCollection, crawlerPa
 
 var obtainPhantomInstance = function(callback){
 
-  PhantomHelper.getPhantomInstace(function(err, ph){
+  PhantomFactory.getPhantomInstace(function(err, ph){
     
     if(err){
 
@@ -130,7 +130,7 @@ var crawlTwitterWithQueryBatch = function(ph, twitterQueriesBatch, callback){
   async.eachSeries(twitterQueriesBatch, function(twitterQuery, firstCallback){
 
     // Retrieve tweets and save them
-    TwitterHelper.scrapeTweetsFromSearchResult(ph, twitterQuery, function(err, tweets){
+    PhantomHelper.scrapeTweetsFromSearchResult(ph, twitterQuery, function(err, tweets){
       
       if(err){
         return firstCallback(err);
