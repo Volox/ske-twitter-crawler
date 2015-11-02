@@ -11,6 +11,7 @@ var TweetSchema = new Schema({
   date: Date,
   analyzedTwitter:{type:Boolean, default:false},
   analyzedDbpedia:{type:Boolean, default:false},
+  lang:{type:String, default:'unknown'},
   seed:{ type: Schema.Types.ObjectId, ref: 'seed' }
 });
 
