@@ -4,7 +4,7 @@
   "description": "A NodeJS script that crawls Twitter to retrieve basic info of the tweets based on a query.",
   "main": "index.js",
   "scripts": {
-    "crawller": "node index.js"
+    "crawler": "node index.js"
   },
   "repository": {
     "type": "git",
