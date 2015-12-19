@@ -26,7 +26,8 @@
     "debug": "2.x",
     "lodash": "3.x",
     "moment": "2.x",
-    "mongodb": "2.x"
+    "mongodb": "2.x",
+    "twitter-scraper": "volox/TwitterScraper"
   },
   "devDependencies": {
     "eslint-config-volox": "*"

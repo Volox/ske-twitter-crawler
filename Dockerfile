@@ -10,7 +10,7 @@ ENV SKE_DATABASE_NAME ske
 ENV DEBUG *
 
 # deploys the code and installs the dependencies
-RUN git clone https://github.com/Volox/ske-twitter-crawler . ; npm install
+RUN git clone https://github.com/Volox/ske-twitter-crawler . ; npm i
 
 # makes sure the latest version of the code is being used, and starts the application
 CMD git pull origin master; npm run crawler
