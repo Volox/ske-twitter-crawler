@@ -1,33 +1,34 @@
 {
   "name": "ske-twitter-crawler",
-  "version": "1.0.0",
-  "description": "A NodeJS script that crawls Twitter to retrieve the tweets retrieved by searching on twitter a given set of keywords",
+  "version": "2.0.0",
+  "description": "A NodeJS script that crawls Twitter to retrieve basic info of the tweets based on a query.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "crawller": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/acerosalazar/ske-twitter-crawler"
+    "url": "https://github.com/Volox/ske-twitter-crawler"
   },
   "keywords": [
-    "NodeJS",
-    "Twitter"
+    "ske",
+    "twitter"
   ],
-  "author": "Andrea Mauri & Felix J. Acero",
-  "license": "ISC",
+  "author": "Andrea Mauri & Felix J. Acero & Riccardo Volonterio",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/acerosalazar/ske-twitter-crawler/issues"
+    "url": "https://github.com/Volox/ske-twitter-crawler/issues"
   },
-  "homepage": "https://github.com/acerosalazar/ske-twitter-crawler",
+  "homepage": "https://github.com/Volox/ske-twitter-crawler",
   "dependencies": {
-    "async": "^1.4.0",
-    "cheerio": "^0.19.0",
-    "freeport": "^1.0.5",
-    "moment": "^2.10.6",
-    "mongoose": "^4.1.0",
-    "phantom": "^0.7.2",
-    "winston": "^1.0.1",
-    "underscore": "^1.8.3"
+    "bluebird": "3.x",
+    "co": "4.x",
+    "debug": "2.x",
+    "lodash": "3.x",
+    "moment": "2.x",
+    "mongodb": "2.x"
+  },
+  "devDependencies": {
+    "eslint-config-volox": "*"
   }
 }
