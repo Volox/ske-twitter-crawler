@@ -27,6 +27,7 @@
     "lodash": "3.x",
     "moment": "2.x",
     "mongodb": "2.x",
+    "stream-funnel": "1.x",
     "twitter-scraper": "volox/TwitterScraper"
   },
   "devDependencies": {
